@@ -1,4 +1,9 @@
-### Hi there 👋
+### About Me
+An enthusiastic scientist, working towards a master of science degree through the EECS department at York University under the supervision of professor James Elder starting.
+
+I got my bachelor of science degree in Electrical Engineering from University of Tehran in 2021 under the supervision of professor Ahmad Kalhor. I also received a minor degree in Computer Engineering from University of Tehran in 2020 whilst doing my bachelors there.
+
+My current research goal is leveraging computational schemes in understanding natural phenomenons around us. To be more specific I am interested in building scalable models which are able to mimic the natural process happening every second withing many living ecosystems. These processes range from the ability of humans in complex semantic tasks, both visual and verbal, to the fascinating ability of animals in learning via little reinforcement.
 
 <!--
 **SajjadPSavoji/SajjadPSavoji** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
