@@ -11,6 +11,12 @@ If you are interestes in my background, you can view my <a href="https://github.
 ### Projects
 #### Generative Models:
 - [DCGAN for CelebA faces](https://github.com/SajjadPSavoji/DCGANFaces)
+- [RealNVP for CelebA faces](https://github.com/SajjadPSavoji/RealNVPFaces)
+- [VAE for CelebA faces](https://github.com/SajjadPSavoji/VAEFaces)
+- [Conditional GAN for CFAR scenes](https://github.com/SajjadPSavoji/Conditional-GAN)
+- [AC-GAN for CFAR scenes](https://github.com/SajjadPSavoji/Auxiliary-Classifier-GAN)
+- [DCGAN for CFAR scenes](https://github.com/SajjadPSavoji/Deep-Convolutional-GAN)
+- [VAE for MNIST](https://github.com/SajjadPSavoji/Variational-Auto-Encoder)
 #### Natural Language Processing:
 []()
 #### Computer Vision:
