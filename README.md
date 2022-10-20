@@ -17,22 +17,22 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [AC-GAN for CFAR scenes](https://github.com/SajjadPSavoji/Auxiliary-Classifier-GAN)
 - [DCGAN for CFAR scenes](https://github.com/SajjadPSavoji/Deep-Convolutional-GAN)
 - [VAE for MNIST](https://github.com/SajjadPSavoji/Variational-Auto-Encoder)
-- [LSTM Language Model for Sentence Generation](https://github.com/SajjadPSavoji/Language_Modelling_LSTM)
 
 #### Natural Language Processing:
-- [Hidden Morkov LM for twits sentiment analysis](https://github.com/SajjadPSavoji/Twitter-Sentiment-Analysis-HMM)
-- [N-Gram LM for twits hate speech detection](https://github.com/SajjadPSavoji/Ngram_Language_Model)
 - [BERT LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
 - [XLNet LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
+- [Hidden Morkov LM for twits sentiment analysis](https://github.com/SajjadPSavoji/Twitter-Sentiment-Analysis-HMM)
+- [LSTM Language Model for Sentence Generation](https://github.com/SajjadPSavoji/Language_Modelling_LSTM)
+- [N-Gram LM for twits hate speech detection](https://github.com/SajjadPSavoji/Ngram_Language_Model)
 - [Naive Bayes LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
 - [Logistic Regression LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
-- []()
 
 #### Computer Vision:
+- [Traffic Analytics at Intersection](https://github.com/ElderLab-York-University/Transplan)
+- [Chained Tracker: an end-to-end MOTracker](https://github.com/SajjadPSavoji/CTracker)
 - [Active Polyhedral Scene Matching](https://github.com/SajjadPSavoji/Active-Polyhedral-Scene-Matching)
 - [German Traffic Sign Recognition](https://github.com/SajjadPSavoji/German-Traffic-Sign-Recognition-Benchmark)
 - [Unsupervised Image Compression with Kmeans](https://github.com/SajjadPSavoji/Image-Compression-Kmeans)
-- [Chained Tracker: an end-to-end MOTracker](https://github.com/SajjadPSavoji/CTracker)
 - [Seperation Index in CNN layers](https://github.com/SajjadPSavoji/SeperationIndex_for_CNN)
 - [MLP for MNIST classificaton](https://github.com/SajjadPSavoji/Character_Classifer_MLP)
 - [America Sign Language Translation](https://github.com/SajjadPSavoji/American_Sign_Language)
@@ -56,20 +56,4 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [Adeline NNs](https://github.com/SajjadPSavoji/McCulloch-Pitts_Perceptron_Adaline)
 - [Multi Layer Perceptron](https://github.com/SajjadPSavoji/Madeline_MLP)
 - [Perceptron](https://github.com/SajjadPSavoji/McCulloch-Pitts_Perceptron_Adaline)
-- [McCulloch Pitts Neuron Model]()
-
-
-<!--
-**SajjadPSavoji/SajjadPSavoji** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+- [McCulloch Pitts Neuron Model](https://github.com/SajjadPSavoji/McCulloch-Pitts_Perceptron_Adaline)
