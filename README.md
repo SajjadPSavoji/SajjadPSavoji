@@ -8,7 +8,6 @@ My current research goal is leveraging computational schemes in understanding na
 If you are interestes in my background, you can view my <a href="https://github.com/SajjadPSavoji/Resume">CV here</a>.
 
 ---------------------
-### Projects
 #### Generative Models:
 - [DCGAN for CelebA faces](https://github.com/SajjadPSavoji/DCGANFaces)
 - [RealNVP for CelebA faces](https://github.com/SajjadPSavoji/RealNVPFaces)
