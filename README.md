@@ -17,7 +17,7 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [AC-GAN for CFAR scenes](https://github.com/SajjadPSavoji/Auxiliary-Classifier-GAN)
 - [DCGAN for CFAR scenes](https://github.com/SajjadPSavoji/Deep-Convolutional-GAN)
 - [VAE for MNIST](https://github.com/SajjadPSavoji/Variational-Auto-Encoder)
-
+-----------------------
 #### Natural Language Processing:
 - [BERT LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
 - [XLNet LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
@@ -26,7 +26,7 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [N-Gram LM for twits hate speech detection](https://github.com/SajjadPSavoji/Ngram_Language_Model)
 - [Naive Bayes LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
 - [Logistic Regression LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
-
+-----------------------
 #### Computer Vision:
 - [Traffic Analytics at Intersection](https://github.com/ElderLab-York-University/Transplan)
 - [Chained Tracker: an end-to-end MOTracker](https://github.com/SajjadPSavoji/CTracker)
@@ -39,16 +39,16 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [YOLO2 from scratch](https://github.com/SajjadPSavoji/Object_Localization)
 - [HumpBack Whale Identification](https://github.com/SajjadPSavoji/HumpbackWhale_Identification)
 - [Face Recogniton on AT&T](https://github.com/SajjadPSavoji/FaceRecognition)
-
+-----------------------
 #### Sequence Models:
 - [Air quality prediction](https://github.com/SajjadPSavoji/Pollution-Predicttion)
-
+-----------------------
 #### Clustering:
 - [PASCAL VOC Bboxes](https://github.com/SajjadPSavoji/bbox-clustering)
-- 
+-----------------------
 #### Data Analytics:
 - [NY CitiBike trip data analysis](https://github.com/SajjadPSavoji/CitiBikeNYC)
-
+-----------------------
 #### Neural Networks Basics:
 - [Mechanism Base NNs](https://github.com/SajjadPSavoji/Mechanism-Based-Neural-Nerworks)
 - [Memory Associative NNs](https://github.com/SajjadPSavoji/Memory-Associative-Networks)
