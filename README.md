@@ -9,9 +9,13 @@ If you are interestes in my background, you can view my <a href="https://github.
 
 ---------------------
 ### Highlighted Projects
-## Generative Models
-## Natural Language Processing
-## Computer Vision
+#### Generative Models:
+[DCGAN for CelebA faces](https://github.com/SajjadPSavoji/DCGANFaces)
+#### Natural Language Processing:
+[]()
+#### Computer Vision:
+[]()
+
 <!--
 **SajjadPSavoji/SajjadPSavoji** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
