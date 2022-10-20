@@ -6,6 +6,12 @@ I got my bachelor of science degree in Electrical Engineering from <a href="http
 My current research goal is leveraging computational schemes in understanding natural phenomenons around us. To be more specific I am interested in building scalable models which are able to mimic the natural process happening every second withing many living ecosystems. These processes range from the ability of humans in complex semantic tasks, both visual and verbal, to the fascinating ability of animals in learning via little reinforcement.
 
 If you are interestes in my background, you can view my <a href="https://github.com/SajjadPSavoji/Resume">CV here</a>.
+
+---------------------
+### Highlighted Projects
+## Generative Models
+## Natural Language Processing
+## Computer Vision
 <!--
 **SajjadPSavoji/SajjadPSavoji** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
