@@ -17,10 +17,47 @@ If you are interestes in my background, you can view my <a href="https://github.
 - [AC-GAN for CFAR scenes](https://github.com/SajjadPSavoji/Auxiliary-Classifier-GAN)
 - [DCGAN for CFAR scenes](https://github.com/SajjadPSavoji/Deep-Convolutional-GAN)
 - [VAE for MNIST](https://github.com/SajjadPSavoji/Variational-Auto-Encoder)
+- [LSTM Language Model for Sentence Generation](https://github.com/SajjadPSavoji/Language_Modelling_LSTM)
+
 #### Natural Language Processing:
-[]()
+- [Hidden Morkov LM for twits sentiment analysis](https://github.com/SajjadPSavoji/Twitter-Sentiment-Analysis-HMM)
+- [N-Gram LM for twits hate speech detection](https://github.com/SajjadPSavoji/Ngram_Language_Model)
+- [BERT LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
+- [XLNet LM for twits hate speech detection](https://github.com/SajjadPSavoji/Hate_Speech_Detection)
+- [Naive Bayes LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
+- [Logistic Regression LM for twits hate speech detection](https://github.com/SajjadPSavoji/Naive_Bayes_Logit_Regression_Language_Modelling)
+- []()
+
 #### Computer Vision:
-[]()
+- [Active Polyhedral Scene Matching](https://github.com/SajjadPSavoji/Active-Polyhedral-Scene-Matching)
+- [German Traffic Sign Recognition](https://github.com/SajjadPSavoji/German-Traffic-Sign-Recognition-Benchmark)
+- [Unsupervised Image Compression with Kmeans](https://github.com/SajjadPSavoji/Image-Compression-Kmeans)
+- [Chained Tracker: an end-to-end MOTracker](https://github.com/SajjadPSavoji/CTracker)
+- [Seperation Index in CNN layers](https://github.com/SajjadPSavoji/SeperationIndex_for_CNN)
+- [MLP for MNIST classificaton](https://github.com/SajjadPSavoji/Character_Classifer_MLP)
+- [America Sign Language Translation](https://github.com/SajjadPSavoji/American_Sign_Language)
+- [YOLO2 from scratch](https://github.com/SajjadPSavoji/Object_Localization)
+- [HumpBack Whale Identification](https://github.com/SajjadPSavoji/HumpbackWhale_Identification)
+- [Face Recogniton on AT&T](https://github.com/SajjadPSavoji/FaceRecognition)
+
+#### Sequence Models:
+- [Air quality prediction](https://github.com/SajjadPSavoji/Pollution-Predicttion)
+
+#### Clustering:
+- [PASCAL VOC Bboxes](https://github.com/SajjadPSavoji/bbox-clustering)
+- 
+#### Data Analytics:
+- [NY CitiBike trip data analysis](https://github.com/SajjadPSavoji/CitiBikeNYC)
+
+#### Neural Networks Basics:
+- [Mechanism Base NNs](https://github.com/SajjadPSavoji/Mechanism-Based-Neural-Nerworks)
+- [Memory Associative NNs](https://github.com/SajjadPSavoji/Memory-Associative-Networks)
+- [Madeline NNs](https://github.com/SajjadPSavoji/Madeline_MLP)
+- [Adeline NNs](https://github.com/SajjadPSavoji/McCulloch-Pitts_Perceptron_Adaline)
+- [Multi Layer Perceptron](https://github.com/SajjadPSavoji/Madeline_MLP)
+- [Perceptron](https://github.com/SajjadPSavoji/McCulloch-Pitts_Perceptron_Adaline)
+- [McCulloch Pitts Neuron Model]()
+
 
 <!--
 **SajjadPSavoji/SajjadPSavoji** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
