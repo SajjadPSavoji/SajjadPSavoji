@@ -97,13 +97,13 @@ def write(name, theme, content):
 # ---------------------------------------------------------------- banner
 BANNER_TEXT = ("I post-train foundation models and keep them improving after they ship: today the LLM "
                "behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.")
-BANNER_CHIPS = [(lab, "b1") for lab in ["LLM post-training", "Continual learning", "LLM evaluation",
-                                          "Robot VLAs", "World models", "3D vision"]]
+BANNER_CHIPS = [("LLM post-training", "blue"), ("Continual learning", "green"), ("LLM evaluation", "purple"),
+                ("Robot VLAs", "pink"), ("World models", "amber"), ("3D vision", "teal")]
 
 
 def banner(c, theme):
     W, H = 880, 320
-    hues = ["b1", "b2", "b3", "b2"]
+    hues = ["blue", "purple", "pink", "amber"]
     b = [f'<defs>'
          f'<linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["card"]}"/>'
          f'<stop offset="1" stop-color="{c["card2"]}"/></linearGradient>'
@@ -135,7 +135,7 @@ def banner(c, theme):
     for k, r in enumerate(routes):
         pts = [nodes[l][n] for l, n in r]
         d = "M" + " L".join(f"{x},{y}" for x, y in pts)
-        hue = ["b1", "b2", "b3"][k]
+        hue = ["blue", "pink", "amber"][k]
         b.append(f'<path d="{d}" fill="none" stroke="{c[hue]}" stroke-width="1.6" opacity="0.5"/>')
         dur = 3.2 + k * 0.7
         b.append(f'<circle r="3.2" fill="{c[hue]}"><animateMotion dur="{dur}s" repeatCount="indefinite" '
