@@ -144,9 +144,9 @@ def banner(c, theme):
     # the flywheel: what ships feeds the next round of data (static, grey, square corners)
     y0, yb = 246, 266
     b.append(f'<path d="M{xs[3]},{y0} V{yb} H{xs[0]} V{y0 + 2}" fill="none" stroke="{c["muted"]}" '
-             f'stroke-width="1" stroke-linejoin="round"/>')  # same weight as the → glyphs
+             f'stroke-width="0.6" stroke-linejoin="round"/>')  # thinner than the → glyphs
     b.append(f'<path d="M{xs[0] - 3},{y0 + 6} L{xs[0]},{y0 + 2} L{xs[0] + 3},{y0 + 6}" fill="none" '
-             f'stroke="{c["muted"]}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>')
+             f'stroke="{c["muted"]}" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round"/>')
     b.append(t((xs[0] + xs[3]) / 2, yb + 16, "feedback", 11.5, c["muted"], 600, True, "middle"))
     b.append('</g>')
     # left text block
