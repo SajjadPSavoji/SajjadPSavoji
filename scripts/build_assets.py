@@ -4,7 +4,8 @@ Run:  python scripts/build_assets.py   (needs Pillow for text measurement, macOS
 Every visual is a static, self-hosted SVG, so nothing on the profile depends
 on a third-party stats service. Edit the DATA sections and re-run to update.
 
-Repo stats on the project cards (languages, lines, stars) are a snapshot. Refresh with
+Repo stats on the project cards (languages, lines, stars) are a snapshot; the language
+bar uses blue shades by share, not GitHub's per-language colors, to keep the cards calm. Refresh with
   gh api repos/OWNER/REPO/languages        # bytes per language
   gh api repos/OWNER/REPO --jq .stargazers_count
 and count non-blank lines of tracked source files in a shallow clone.
@@ -23,15 +24,14 @@ THEMES = {
     "dark": dict(card="#151b23", card2="#10161e", border="#2a313c", text="#e6edf3", muted="#9198a1",
                  faint="#363d47", grid="#1f2630", chip="#1b2330", track="#262d37",
                  blue="#7aa2ff", teal="#3fd0c9", purple="#c297ff", amber="#f2b552", pink="#ff7eb6",
-                 green="#6fd08c"),
+                 green="#6fd08c",
+                 b1="#6f97ff", b2="#93b2ff", b3="#b9cdff", b4="#dfe8ff", wash="#eef3ff"),
     "light": dict(card="#f6f8fa", card2="#ffffff", border="#d1d9e0", text="#1f2328", muted="#59636e",
                   faint="#c8d1da", grid="#e3e8ee", chip="#ffffff", track="#e3e8ee",
                   blue="#3657d6", teal="#0b8a83", purple="#7c4dce", amber="#b26a00", pink="#c2367a",
-                  green="#2c8a4b"),
+                  green="#2c8a4b",
+                  b1="#2f54d1", b2="#5677e0", b3="#87a0ec", b4="#b3c4f4", wash="#e9effd"),
 }
-# GitHub linguist colors, used for the language bars.
-LANG_COLORS = {"Python": "#3572A5", "Shell": "#89e051", "HTML": "#e34c26", "Jupyter Notebook": "#DA5B0B",
-               "TeX": "#3D6117", "TypeScript": "#3178c6"}
 
 # ---------------------------------------------------------------- helpers
 _FONTS = {}
@@ -97,22 +97,22 @@ def write(name, theme, content):
 # ---------------------------------------------------------------- banner
 BANNER_TEXT = ("I post-train foundation models and keep them improving after they ship: today the LLM "
                "behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.")
-BANNER_CHIPS = [("LLM post-training", "blue"), ("Continual learning", "green"), ("LLM evaluation", "purple"),
-                ("Robot VLAs", "pink"), ("World models", "amber"), ("3D vision", "teal")]
+BANNER_CHIPS = [(lab, "b1") for lab in ["LLM post-training", "Continual learning", "LLM evaluation",
+                                          "Robot VLAs", "World models", "3D vision"]]
 
 
 def banner(c, theme):
     W, H = 880, 320
-    hues = ["blue", "purple", "pink", "amber"]
+    hues = ["b1", "b2", "b3", "b2"]
     b = [f'<defs>'
          f'<linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["card"]}"/>'
          f'<stop offset="1" stop-color="{c["card2"]}"/></linearGradient>'
          f'<linearGradient id="rb" x1="0" y1="0" x2="1" y2="0">'
-         + "".join(f'<stop offset="{i/5:.2f}" stop-color="{c[h]}"/>' for i, h in
-                   enumerate(["blue", "teal", "green", "amber", "pink", "purple"]))
+         + f'<stop offset="0" stop-color="{c["b1"]}"/><stop offset="0.55" stop-color="{c["b3"]}"/>'
+         + f'<stop offset="1" stop-color="{c["wash"]}"/>'
          + f'</linearGradient>'
-         f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["purple"]}" '
-         f'stop-opacity="{0.16 if theme == "dark" else 0.08}"/><stop offset="1" stop-color="{c["purple"]}" '
+         f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["blue"]}" '
+         f'stop-opacity="{0.16 if theme == "dark" else 0.08}"/><stop offset="1" stop-color="{c["blue"]}" '
          f'stop-opacity="0"/></radialGradient>'
          f'<clipPath id="clip"><rect x="1" y="1" width="{W-2}" height="{H-2}" rx="16"/></clipPath>'
          f'</defs>',
@@ -135,7 +135,7 @@ def banner(c, theme):
     for k, r in enumerate(routes):
         pts = [nodes[l][n] for l, n in r]
         d = "M" + " L".join(f"{x},{y}" for x, y in pts)
-        hue = ["blue", "pink", "amber"][k]
+        hue = ["b1", "b2", "b3"][k]
         b.append(f'<path d="{d}" fill="none" stroke="{c[hue]}" stroke-width="1.6" opacity="0.5"/>')
         dur = 3.2 + k * 0.7
         b.append(f'<circle r="3.2" fill="{c[hue]}"><animateMotion dur="{dur}s" repeatCount="indefinite" '
@@ -156,7 +156,7 @@ def banner(c, theme):
     b.append('</g>')
     # left text block
     x0 = 44
-    b.append(f'<rect x="{x0}" y="38" width="8" height="8" rx="2" fill="{c["amber"]}"/>')
+    b.append(f'<rect x="{x0}" y="38" width="8" height="8" rx="2" fill="{c["b1"]}"/>')
     b.append(t(x0 + 16, 46, "AI RESEARCH SCIENTIST  ·  TORONTO, CANADA", 12, c["muted"], 600, True, ls=1.1))
     b.append(t(x0 - 2, 94, "Sajjad Pakdamansavoji", 40, c["text"], 700, ls=-0.6))
     b.append(t(x0, 126, "Lead AI Research Scientist at Upwork", 18, c["blue"], 600))
@@ -213,42 +213,46 @@ def highlights(c, theme):
 
 
 # ---------------------------------------------------------------- project cards
-# (key, name, hue, kicker, owner, description, {language: bytes}, footer facts)
+# (key, name, kicker, owner, description, {language: bytes}, footer facts)
 PROJECTS = [
-    ("calvin-max", "CALVIN-MAX", "pink", "ROBOT LEARNING · BENCHMARK", "forall-labs",
+    ("calvin-max", "CALVIN-MAX", "ROBOT LEARNING · BENCHMARK", "forall-labs",
      "What happens when the scene or the instruction changes while a robot is mid-task? 7,828 cases show "
      "all 10 policies tested, VLAs included, lose 4.4 to 9.9 points.",
      {"Python": 426057, "HTML": 68733, "Shell": 9602}, ["8.7k lines", "MIT"]),
-    ("opencap", "OpenCaP", "amber", "CODE AS POLICIES · LLM EVAL", "forall-labs",
+    ("opencap", "OpenCaP", "CODE AS POLICIES · LLM EVAL", "forall-labs",
      "7,560 trials of 21 open-weight LLMs writing robot code. Each failure gets the smallest fix that "
      "works in simulation and is sorted into one of six defect types.",
      {"Python": 1055608, "Shell": 190616, "HTML": 78350}, ["25.5k lines", "MIT"]),
-    ("autopolish", "AutoPolish", "purple", "VISION · IMAGE EDITING", "forall-labs",
+    ("autopolish", "AutoPolish", "VISION · IMAGE EDITING", "forall-labs",
      "A synthetic audience of persona-conditioned Qwen2-VL critics steers FLUX.1 Kontext to make images "
      "look better, with no training. Agrees with human raters up to 0.96.",
      {"Python": 573729, "HTML": 55007, "Jupyter Notebook": 24676, "Shell": 7132}, ["12.3k lines", "MIT"]),
-    ("awesome-wsp", "Awesome WSP", "green", "AGENTS · LIVING RESEARCH MAP", "SajjadPSavoji",
+    ("awesome-wsp", "Awesome WSP", "AGENTS · LIVING RESEARCH MAP", "SajjadPSavoji",
      "A map of LLMs that read, edit and write other networks' weights. An agent I built finds new work "
      "every day, reviews pull requests and keeps the list current.",
      {"Python": 14870}, ["606 entries", "★ 4", "CC0"]),
-    ("minivlmdoceval", "MiniVLMDocEval", "blue", "VLMS · DOCUMENT AI", "SajjadPSavoji",
+    ("minivlmdoceval", "MiniVLMDocEval", "VLMS · DOCUMENT AI", "SajjadPSavoji",
      "Are sub-1B vision-language models ready for documents? Six open models on five benchmarks; a 450M "
      "model beat both 0.9B models on ChartQA.",
      {"Python": 111847, "TeX": 107642, "Jupyter Notebook": 10279, "Shell": 9668}, ["3.7k lines"]),
-    ("colabctl", "colabctl", "teal", "DEV TOOLING · GPU RUNTIMES", "SajjadPSavoji",
+    ("colabctl", "colabctl", "DEV TOOLING · GPU RUNTIMES", "SajjadPSavoji",
      "Start, check and shut down Google Colab GPU runtimes from the shell, so scripts and coding agents "
      "can use them without clicking through a UI.",
      {"Python": 87615, "Shell": 221}, ["2.0k lines", "stdlib only"]),
 ]
 
 
-def card(c, theme, key, name, hue, kicker, owner, desc, langs, facts):
+def card(c, theme, key, name, kicker, owner, desc, langs, facts):
     W, H = 432, 226
     b = [f'<defs><clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12"/></clipPath>'
          f'<clipPath id="bar"><rect x="22" y="{H-56}" width="{W-44}" height="6" rx="3"/></clipPath></defs>',
          f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12" fill="{c["card"]}" stroke="{c["border"]}"/>',
-         f'<rect x="0" y="0" width="{W}" height="4" fill="{c[hue]}" clip-path="url(#cc)"/>']
-    b.append(t(22, 34, kicker, 11, c[hue], 700, True, ls=0.8))
+         f'<linearGradient id="tb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["b1"]}"/>'
+         f'<stop offset="1" stop-color="{c["wash"]}"/></linearGradient>',
+         f'<rect x="0" y="0" width="{W}" height="4" fill="url(#tb)" clip-path="url(#cc)"/>']
+    b.append(t(22, 34, kicker, 11, c["b1"], 700, True, ls=0.8))
+    shade = {lang: c[f"b{min(i, 3) + 1}"] for i, (lang, _) in
+             enumerate(sorted(langs.items(), key=lambda kv: -kv[1]))}
     b.append(t(W - 22, 34, owner, 11, c["muted"], 400, True, "end"))
     b.append(t(22, 66, name, 22, c["text"], 700, ls=-0.3))
     lines = wrap(desc, 13.5, W - 44)
@@ -262,7 +266,7 @@ def card(c, theme, key, name, hue, kicker, owner, desc, langs, facts):
     segs = []
     for lang, n in sorted(langs.items(), key=lambda kv: -kv[1]):
         w = (W - 44) * n / total
-        segs.append(f'<rect x="{x:.2f}" y="{H-56}" width="{w + 0.5:.2f}" height="6" fill="{LANG_COLORS[lang]}"/>')
+        segs.append(f'<rect x="{x:.2f}" y="{H-56}" width="{w + 0.5:.2f}" height="6" fill="{shade[lang]}"/>')
         x += w
     b.append(f'<g clip-path="url(#bar)">{"".join(segs)}</g>')
     # legend (top languages) + facts on the right
@@ -272,7 +276,7 @@ def card(c, theme, key, name, hue, kicker, owner, desc, langs, facts):
         if pct < 2:
             continue
         lab = f"{lang.replace('Jupyter Notebook', 'Jupyter')} {pct:.0f}%"
-        b.append(f'<circle cx="{x + 4}" cy="{H - 27}" r="4" fill="{LANG_COLORS[lang]}"/>')
+        b.append(f'<circle cx="{x + 4}" cy="{H - 27}" r="4" fill="{shade[lang]}"/>')
         b.append(t(x + 13, H - 23, lab, 11.5, c["muted"]))
         x += 13 + tw(lab, 11.5) + 12
     right = "  ·  ".join(facts)
