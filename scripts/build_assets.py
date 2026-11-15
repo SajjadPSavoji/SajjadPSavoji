@@ -141,17 +141,13 @@ def banner(c, theme):
         b.append(t(xs[li], 236, lab, 11.5, c[hues[li]], 600, True, "middle"))
     for li in range(3):
         b.append(t((xs[li] + xs[li + 1]) / 2, 236, "→", 11.5, c["muted"], 400, True, "middle"))
-    # the flywheel: what ships feeds the next round of data
-    y0 = 246
-    arc = f"M{xs[3]},{y0} C{xs[3] + 6},{y0 + 44} {xs[0] - 6},{y0 + 44} {xs[0]},{y0 + 3}"
-    b.append(f'<path d="{arc}" fill="none" stroke="{c["green"]}" stroke-width="1.6" stroke-dasharray="4 4" '
-             f'opacity="0.8"><animate attributeName="stroke-dashoffset" values="16;0" dur="1.2s" '
-             f'repeatCount="indefinite"/></path>')
+    # the flywheel: what ships feeds the next round of data (static, grey, square corners)
+    y0, yb = 246, 266
+    b.append(f'<path d="M{xs[3]},{y0} V{yb} H{xs[0]} V{y0 + 2}" fill="none" stroke="{c["muted"]}" '
+             f'stroke-width="1.5" stroke-linejoin="round"/>')
     b.append(f'<path d="M{xs[0] - 4.5},{y0 + 8} L{xs[0]},{y0 + 2} L{xs[0] + 4.5},{y0 + 8}" fill="none" '
-             f'stroke="{c["green"]}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>')
-    b.append(f'<circle r="3.2" fill="{c["green"]}"><animateMotion dur="2.6s" repeatCount="indefinite" '
-             f'path="{arc}"/></circle>')
-    b.append(t((xs[0] + xs[3]) / 2, y0 + 50, "feedback", 11.5, c["green"], 600, True, "middle"))
+             f'stroke="{c["muted"]}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>')
+    b.append(t((xs[0] + xs[3]) / 2, yb + 16, "feedback", 11.5, c["muted"], 600, True, "middle"))
     b.append('</g>')
     # left text block
     x0 = 44
