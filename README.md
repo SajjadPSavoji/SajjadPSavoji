@@ -30,6 +30,8 @@ research with **[Forall Labs](https://forall-labs.github.io)**.
 
 My focus now is **multimodal agents that learn continually from real-world feedback**.
 
+📄 **[Read my CV (PDF)](https://github.com/SajjadPSavoji/Resume/blob/master/Sajjad_Pakdamansavoji_CV.pdf)** · [LaTeX source](https://github.com/SajjadPSavoji/Resume)
+
 <table>
   <tr>
     <td width="33%" valign="top">
