@@ -1,8 +1,13 @@
 """Generate the profile README's SVG assets (light + dark) into ../assets.
 
-Run:  python scripts/build_assets.py   (needs Pillow for text measurement)
+Run:  python scripts/build_assets.py   (needs Pillow for text measurement, macOS fonts)
 Every visual is a static, self-hosted SVG, so nothing on the profile depends
-on a third-party stats service. Edit the DATA section and re-run to update.
+on a third-party stats service. Edit the DATA sections and re-run to update.
+
+Repo stats on the project cards (languages, lines, stars) are a snapshot. Refresh with
+  gh api repos/OWNER/REPO/languages        # bytes per language
+  gh api repos/OWNER/REPO --jq .stargazers_count
+and count non-blank lines of tracked source files in a shallow clone.
 """
 from pathlib import Path
 from html import escape
@@ -15,15 +20,20 @@ SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, A
 MONO = "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
 
 THEMES = {
-    "dark": dict(bg="#0d1117", card="#151b23", card2="#10161e", border="#2a313c", text="#e6edf3",
-                 muted="#9198a1", faint="#3d444d", grid="#1f2630", a1="#7aa2ff", a2="#3fd0c9", a3="#c297ff",
-                 chip="#1b2330"),
-    "light": dict(bg="#ffffff", card="#f6f8fa", card2="#ffffff", border="#d1d9e0", text="#1f2328",
-                  muted="#59636e", faint="#c8d1da", grid="#e6ebf0", a1="#3657d6", a2="#0b8a83", a3="#7c4dce",
-                  chip="#ffffff"),
+    "dark": dict(card="#151b23", card2="#10161e", border="#2a313c", text="#e6edf3", muted="#9198a1",
+                 faint="#363d47", grid="#1f2630", chip="#1b2330", track="#262d37",
+                 blue="#7aa2ff", teal="#3fd0c9", purple="#c297ff", amber="#f2b552", pink="#ff7eb6",
+                 green="#6fd08c"),
+    "light": dict(card="#f6f8fa", card2="#ffffff", border="#d1d9e0", text="#1f2328", muted="#59636e",
+                  faint="#c8d1da", grid="#e3e8ee", chip="#ffffff", track="#e3e8ee",
+                  blue="#3657d6", teal="#0b8a83", purple="#7c4dce", amber="#b26a00", pink="#c2367a",
+                  green="#2c8a4b"),
 }
+# GitHub linguist colors, used for the language bars.
+LANG_COLORS = {"Python": "#3572A5", "Shell": "#89e051", "HTML": "#e34c26", "Jupyter Notebook": "#DA5B0B",
+               "TeX": "#3D6117", "TypeScript": "#3178c6"}
 
-# ---------------------------------------------------------------- text metrics
+# ---------------------------------------------------------------- helpers
 _FONTS = {}
 
 
@@ -56,16 +66,26 @@ def svg(w, h, body, title):
             f'role="img" aria-label="{escape(title)}"><title>{escape(title)}</title>{body}</svg>\n')
 
 
-def t(x, y, s, size, fill, weight=400, mono=False, anchor="start", ls=None, extra=""):
+def t(x, y, s, size, fill, weight=400, mono=False, anchor="start", ls=None):
     fam = MONO if mono else SANS
     lsp = f' letter-spacing="{ls}"' if ls is not None else ""
-    return (f'<text x="{x}" y="{y}" font-family="{fam}" font-size="{size}" font-weight="{weight}" '
-            f'fill="{fill}" text-anchor="{anchor}"{lsp}{extra}>{escape(s)}</text>')
+    return (f'<text x="{x:.1f}" y="{y:.1f}" font-family="{fam}" font-size="{size}" font-weight="{weight}" '
+            f'fill="{fill}" text-anchor="{anchor}"{lsp}>{escape(s)}</text>')
 
 
-def chip(x, y, label, c, size=12, h=24, mono=False, color=None):
+def dot_chip(x, y, label, c, hue, size=12, h=26):
+    """Pill with a colored dot: the colored dot carries the hue, the text stays readable."""
+    w = tw(label, size) + 34
+    s = (f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" fill="{c["chip"]}" '
+         f'stroke="{c["border"]}"/>'
+         f'<circle cx="{x + 14:.1f}" cy="{y + h/2}" r="4" fill="{c[hue]}"/>'
+         + t(x + 24, y + h / 2 + size * 0.36, label, size, c["text"], 500))
+    return s, w
+
+
+def chip(x, y, label, c, size=12, h=24, color=None, mono=False):
     w = tw(label, size, mono=mono) + 20
-    return (f'<rect x="{x}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" fill="{c["chip"]}" '
+    return (f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" fill="{c["chip"]}" '
             f'stroke="{c["border"]}"/>'
             + t(x + w / 2, y + h / 2 + size * 0.36, label, size, color or c["text"], 500, mono, "middle")), w
 
@@ -75,161 +95,204 @@ def write(name, theme, content):
 
 
 # ---------------------------------------------------------------- banner
+BANNER_TEXT = ("I post-train foundation models and keep them improving after they ship: today the LLM "
+               "behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.")
+BANNER_CHIPS = [("LLM post-training", "blue"), ("Continual learning", "green"), ("LLM evaluation", "purple"),
+                ("Robot VLAs", "pink"), ("World models", "amber"), ("3D vision", "teal")]
+
+
 def banner(c, theme):
-    W, H = 880, 280
+    W, H = 880, 320
+    hues = ["blue", "purple", "pink", "amber"]
     b = [f'<defs>'
-         f'<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c["a1"]}"/>'
-         f'<stop offset="1" stop-color="{c["a2"]}"/></linearGradient>'
          f'<linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["card"]}"/>'
          f'<stop offset="1" stop-color="{c["card2"]}"/></linearGradient>'
-         f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["a1"]}" '
-         f'stop-opacity="{0.18 if theme == "dark" else 0.10}"/><stop offset="1" stop-color="{c["a1"]}" stop-opacity="0"/>'
-         f'</radialGradient>'
+         f'<linearGradient id="rb" x1="0" y1="0" x2="1" y2="0">'
+         + "".join(f'<stop offset="{i/5:.2f}" stop-color="{c[h]}"/>' for i, h in
+                   enumerate(["blue", "teal", "green", "amber", "pink", "purple"]))
+         + f'</linearGradient>'
+         f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["purple"]}" '
+         f'stop-opacity="{0.16 if theme == "dark" else 0.08}"/><stop offset="1" stop-color="{c["purple"]}" '
+         f'stop-opacity="0"/></radialGradient>'
          f'<clipPath id="clip"><rect x="1" y="1" width="{W-2}" height="{H-2}" rx="16"/></clipPath>'
          f'</defs>',
          f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="16" fill="url(#bgg)" stroke="{c["border"]}"/>',
-         f'<g clip-path="url(#clip)">']
-    # dot grid on the right
-    for gx in range(560, W, 22):
-        for gy in range(18, H, 22):
+         f'<g clip-path="url(#clip)">',
+         f'<rect x="0" y="0" width="{W}" height="4" fill="url(#rb)"/>']
+    for gx in range(580, W, 22):
+        for gy in range(22, H, 22):
             b.append(f'<circle cx="{gx}" cy="{gy}" r="1.2" fill="{c["grid"]}"/>')
-    b.append(f'<circle cx="720" cy="140" r="170" fill="url(#glow)"/>')
-    # small network: 3 -> 4 -> 4 -> 2, with signals travelling along a few edges
-    layers = [[95, 140, 185], [70, 115, 165, 210], [70, 115, 165, 210], [115, 165]]
-    xs = [610, 680, 750, 820]
+    b.append(f'<circle cx="725" cy="150" r="170" fill="url(#glow)"/>')
+    # a small network whose layers are labeled with the loop I run: data -> train -> eval -> ship
+    layers = [[100, 145, 190], [78, 122, 168, 212], [78, 122, 168, 212], [122, 168]]
+    xs = [622, 692, 762, 832]
     nodes = [[(xs[i], y) for y in ys] for i, ys in enumerate(layers)]
     for i in range(len(nodes) - 1):
         for (x1, y1) in nodes[i]:
             for (x2, y2) in nodes[i + 1]:
-                b.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{c["faint"]}" stroke-width="1" '
-                         f'opacity="0.7"/>')
+                b.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{c["faint"]}" stroke-width="1"/>')
     routes = [[(0, 0), (1, 1), (2, 2), (3, 1)], [(0, 2), (1, 3), (2, 1), (3, 0)], [(0, 1), (1, 0), (2, 3), (3, 1)]]
     for k, r in enumerate(routes):
         pts = [nodes[l][n] for l, n in r]
         d = "M" + " L".join(f"{x},{y}" for x, y in pts)
-        b.append(f'<path d="{d}" fill="none" stroke="url(#g)" stroke-width="1.6" opacity="0.55"/>')
+        hue = ["blue", "pink", "amber"][k]
+        b.append(f'<path d="{d}" fill="none" stroke="{c[hue]}" stroke-width="1.6" opacity="0.5"/>')
         dur = 3.2 + k * 0.7
-        b.append(f'<circle r="3" fill="{c["a2"] if k % 2 else c["a1"]}"><animateMotion dur="{dur}s" '
-                 f'repeatCount="indefinite" begin="{k * 0.9}s" path="{d}"/>'
-                 f'<animate attributeName="opacity" values="0;1;1;0" dur="{dur}s" begin="{k * 0.9}s" '
-                 f'repeatCount="indefinite"/></circle>')
+        b.append(f'<circle r="3.2" fill="{c[hue]}"><animateMotion dur="{dur}s" repeatCount="indefinite" '
+                 f'begin="{k * 0.9}s" path="{d}"/><animate attributeName="opacity" values="0;1;1;0" '
+                 f'dur="{dur}s" begin="{k * 0.9}s" repeatCount="indefinite"/></circle>')
     for li, layer in enumerate(nodes):
+        hue = hues[li]
         for ni, (x, y) in enumerate(layer):
-            b.append(f'<circle cx="{x}" cy="{y}" r="6.5" fill="{c["card"]}" stroke="url(#g)" stroke-width="1.8"/>')
-            delay = (li * 0.45 + ni * 0.2) % 3
-            b.append(f'<circle cx="{x}" cy="{y}" r="2.4" fill="{c["a1"] if li % 2 == 0 else c["a2"]}">'
-                     f'<animate attributeName="opacity" values="0.35;1;0.35" dur="3s" begin="{delay:.2f}s" '
+            b.append(f'<circle cx="{x}" cy="{y}" r="7" fill="{c["card"]}" stroke="{c[hue]}" stroke-width="1.8"/>')
+            b.append(f'<circle cx="{x}" cy="{y}" r="2.6" fill="{c[hue]}"><animate attributeName="opacity" '
+                     f'values="0.35;1;0.35" dur="3s" begin="{(li * 0.45 + ni * 0.2) % 3:.2f}s" '
                      f'repeatCount="indefinite"/></circle>')
+    for li, lab in enumerate(["data", "train", "eval", "ship"]):
+        b.append(t(xs[li], 248, lab, 11.5, c[hues[li]], 600, True, "middle"))
+    for li in range(3):
+        b.append(t((xs[li] + xs[li + 1]) / 2, 248, "→", 11.5, c["muted"], 400, True, "middle"))
+    b.append(t(727, 270, "the loop I run, for LLMs and robots", 11, c["muted"], 400, True, "middle"))
     b.append('</g>')
     # left text block
     x0 = 44
-    b.append(f'<rect x="{x0}" y="40" width="8" height="8" rx="2" fill="url(#g)"/>')
-    b.append(t(x0 + 16, 48, "AI RESEARCH SCIENTIST  ·  TORONTO", 12, c["muted"], 600, True, ls=1.2))
-    b.append(t(x0 - 2, 98, "Sajjad Pakdamansavoji", 40, c["text"], 700, ls=-0.6))
-    b.append(t(x0, 130, "Lead AI Research Scientist at Upwork", 18, c["a1"], 600))
-    tag = ("I train, post-train and evaluate foundation models, from LLM agents and VLMs "
-           "to robot VLAs and world models.")
-    for i, line in enumerate(wrap(tag, 15, 470)):
-        b.append(t(x0, 164 + i * 22, line, 15, c["muted"]))
-    x = x0
-    for lab in ["LLM post-training", "LLM agents", "Robot VLAs", "World models", "3D vision"]:
-        s, w = chip(x, 220, lab, c, size=12)
+    b.append(f'<rect x="{x0}" y="38" width="8" height="8" rx="2" fill="{c["amber"]}"/>')
+    b.append(t(x0 + 16, 46, "AI RESEARCH SCIENTIST  ·  TORONTO, CANADA", 12, c["muted"], 600, True, ls=1.1))
+    b.append(t(x0 - 2, 94, "Sajjad Pakdamansavoji", 40, c["text"], 700, ls=-0.6))
+    b.append(t(x0, 126, "Lead AI Research Scientist at Upwork", 18, c["blue"], 600))
+    lines = wrap(BANNER_TEXT, 15, 490)
+    assert len(lines) <= 3, lines
+    for i, line in enumerate(lines):
+        b.append(t(x0, 160 + i * 22, line, 15, c["muted"]))
+    x, y = x0, 160 + len(lines) * 22 + 6
+    for lab, hue in BANNER_CHIPS:
+        s, w = dot_chip(x, y, lab, c, hue, size=12, h=26)
+        if x + w > 560:
+            x, y = x0, y + 34
+            s, w = dot_chip(x, y, lab, c, hue, size=12, h=26)
         b.append(s)
         x += w + 8
-    assert x < 560, f"banner chips overflow: {x}"
-    write("banner", theme, svg(W, H, "".join(b), "Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork"))
+    assert y + 26 < H - 14, f"banner chips overflow: {y}"
+    write("banner", theme, svg(W, H, "".join(b), "Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork. "
+                               + BANNER_TEXT))
 
 
 # ---------------------------------------------------------------- highlights
 HIGHLIGHTS = [
-    ("1st", "place, NeurIPS 2026", "BEHAVIOR Challenge"),
-    ("1M+", "daily users on the model", "my team post-trains"),
-    ("13", "papers and preprints on", "LLMs, robots, 3D vision"),
-    ("3", "patents on robot VLAs,", "world models, 3D vision"),
+    ("1st", "amber", "NeurIPS 2026 BEHAVIOR Challenge",
+     "Our household-robot team, The North Star, won it after placing 4th in 2025."),
+    ("1M+", "blue", "daily users at Upwork",
+     "My team's post-trained LLM writes job posts in Upwork's AI agent, replacing a paid API model."),
+    ("13", "purple", "papers and preprints",
+     "On LLM post-training and evaluation, robot VLAs and world models, and 6D pose estimation."),
+    ("3", "teal", "patents filed",
+     "On robot VLAs, world models and 3D vision, filed during my time at Huawei Noah's Ark Lab."),
 ]
 
 
 def highlights(c, theme):
-    W, H, gap = 880, 112, 14
+    W, H, gap = 880, 180, 12
     tw_ = (W - gap * 3) / 4
-    b = [f'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["a1"]}"/>'
-         f'<stop offset="1" stop-color="{c["a2"]}"/></linearGradient></defs>']
-    for i, (num, l1, l2) in enumerate(HIGHLIGHTS):
+    b = []
+    for i, (num, hue, head, body) in enumerate(HIGHLIGHTS):
         x = i * (tw_ + gap)
         b.append(f'<rect x="{x + 0.5}" y="0.5" width="{tw_ - 1}" height="{H - 1}" rx="12" fill="{c["card"]}" '
                  f'stroke="{c["border"]}"/>')
-        b.append(f'<rect x="{x + 18}" y="18" width="22" height="3" rx="1.5" fill="url(#g)"/>')
-        b.append(t(x + 18, 58, num, 30, c["text"], 700, ls=-0.5))
-        for j, line in enumerate((l1, l2)):
-            assert tw(line, 12.5) < tw_ - 30, line
-            b.append(t(x + 18, 80 + j * 17, line, 12.5, c["muted"]))
-    write("highlights", theme, svg(W, H, "".join(b), "Highlights: 1st place NeurIPS 2026 BEHAVIOR Challenge; "
-                                   "1M+ daily users; 13 papers and preprints; 3 patents"))
+        b.append(f'<rect x="{x + 18}" y="18" width="24" height="3" rx="1.5" fill="{c[hue]}"/>')
+        b.append(t(x + 18, 56, num, 30, c[hue], 700, ls=-0.5))
+        hl = wrap(head, 13, tw_ - 34, bold=True)
+        for j, line in enumerate(hl):
+            b.append(t(x + 18, 80 + j * 17, line, 13, c["text"], 700))
+        y0 = 80 + len(hl) * 17 + 4
+        bl = wrap(body, 12, tw_ - 34)
+        assert y0 + (len(bl) - 1) * 16 < H - 14, (head, bl)
+        for j, line in enumerate(bl):
+            b.append(t(x + 18, y0 + j * 16, line, 12, c["muted"]))
+    write("highlights", theme, svg(W, H, "".join(b), "Highlights. " + " ".join(
+        f"{n} {h}: {d}" for n, _, h, d in HIGHLIGHTS)))
 
 
 # ---------------------------------------------------------------- project cards
+# (key, name, hue, kicker, owner, description, {language: bytes}, footer facts)
 PROJECTS = [
-    ("calvin-max", "CALVIN-MAX", "ROBOT LEARNING · BENCHMARK", "forall-labs",
-     "When does a mid-execution change hurt a robot policy? Paired Base, Pre and Mid runs on CALVIN's "
-     "long-horizon chains.",
-     ["7,828 cases", "10 policies", "−4.4 to −9.9 pts"]),
-    ("opencap", "OpenCaP", "CODE AS POLICIES · LLM EVAL", "forall-labs",
-     "How open-weight LLMs fail at writing robot code, and the smallest verified fix for each failure.",
-     ["7,560 trials", "21 open LLMs", "6 defect families"]),
-    ("autopolish", "AutoPolish", "VISION · GENERATIVE EDITING", "forall-labs",
-     "A training-free loop where persona-conditioned Qwen2-VL critics steer FLUX.1 Kontext toward "
-     "better image aesthetics.",
-     ["Training-free", "Synthetic audience", "0.96 human agreement"]),
-    ("awesome-wsp", "Awesome WSP", "AGENTS · LIVING RESEARCH MAP", "SajjadPSavoji",
-     "A daily-updated map of LLMs that read, edit and write neural network weights, curated by an "
-     "autonomous agent.",
-     ["600+ entries", "Updated daily", "Agent-run PR review"]),
-    ("minivlmdoceval", "MiniVLMDocEval", "VLMS · DOCUMENT AI", "SajjadPSavoji",
-     "Are sub-1B VLMs ready for documents? Six open models on five benchmarks, plus a pre-registered "
-     "fine-tuning study.",
-     ["6 VLMs", "5 benchmarks", "VLMEvalKit"]),
-    ("colabctl", "colabctl", "DEV TOOLING · GPU RUNTIMES", "SajjadPSavoji",
-     "Scriptable connect, status and disconnect for Google Colab GPU runtimes, so scripts and agents can "
-     "drive them.",
-     ["Stdlib-only Python", "CLI", "Agent-friendly"]),
+    ("calvin-max", "CALVIN-MAX", "pink", "ROBOT LEARNING · BENCHMARK", "forall-labs",
+     "What happens when the scene or the instruction changes while a robot is mid-task? 7,828 cases show "
+     "all 10 policies tested, VLAs included, lose 4.4 to 9.9 points.",
+     {"Python": 426057, "HTML": 68733, "Shell": 9602}, ["8.7k lines", "MIT"]),
+    ("opencap", "OpenCaP", "amber", "CODE AS POLICIES · LLM EVAL", "forall-labs",
+     "7,560 trials of 21 open-weight LLMs writing robot code. Each failure gets the smallest fix that "
+     "works in simulation and is sorted into one of six defect types.",
+     {"Python": 1055608, "Shell": 190616, "HTML": 78350}, ["25.5k lines", "MIT"]),
+    ("autopolish", "AutoPolish", "purple", "VISION · IMAGE EDITING", "forall-labs",
+     "A synthetic audience of persona-conditioned Qwen2-VL critics steers FLUX.1 Kontext to make images "
+     "look better, with no training. Agrees with human raters up to 0.96.",
+     {"Python": 573729, "HTML": 55007, "Jupyter Notebook": 24676, "Shell": 7132}, ["12.3k lines", "MIT"]),
+    ("awesome-wsp", "Awesome WSP", "green", "AGENTS · LIVING RESEARCH MAP", "SajjadPSavoji",
+     "A map of LLMs that read, edit and write other networks' weights. An agent I built finds new work "
+     "every day, reviews pull requests and keeps the list current.",
+     {"Python": 14870}, ["606 entries", "★ 4", "CC0"]),
+    ("minivlmdoceval", "MiniVLMDocEval", "blue", "VLMS · DOCUMENT AI", "SajjadPSavoji",
+     "Are sub-1B vision-language models ready for documents? Six open models on five benchmarks; a 450M "
+     "model beat both 0.9B models on ChartQA.",
+     {"Python": 111847, "TeX": 107642, "Jupyter Notebook": 10279, "Shell": 9668}, ["3.7k lines"]),
+    ("colabctl", "colabctl", "teal", "DEV TOOLING · GPU RUNTIMES", "SajjadPSavoji",
+     "Start, check and shut down Google Colab GPU runtimes from the shell, so scripts and coding agents "
+     "can use them without clicking through a UI.",
+     {"Python": 87615, "Shell": 221}, ["2.0k lines", "stdlib only"]),
 ]
 
 
-def card(c, theme, key, name, kicker, owner, desc, chips):
-    W, H = 432, 196
-    b = [f'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["a1"]}"/>'
-         f'<stop offset="1" stop-color="{c["a2"]}"/></linearGradient>'
-         f'<clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12"/></clipPath></defs>',
+def card(c, theme, key, name, hue, kicker, owner, desc, langs, facts):
+    W, H = 432, 226
+    b = [f'<defs><clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12"/></clipPath>'
+         f'<clipPath id="bar"><rect x="22" y="{H-56}" width="{W-44}" height="6" rx="3"/></clipPath></defs>',
          f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12" fill="{c["card"]}" stroke="{c["border"]}"/>',
-         f'<rect x="0" y="0" width="{W}" height="3" fill="url(#g)" clip-path="url(#cc)"/>']
-    b.append(t(22, 34, kicker, 11, c["a1"], 600, True, ls=0.8))
+         f'<rect x="0" y="0" width="{W}" height="4" fill="{c[hue]}" clip-path="url(#cc)"/>']
+    b.append(t(22, 34, kicker, 11, c[hue], 700, True, ls=0.8))
     b.append(t(W - 22, 34, owner, 11, c["muted"], 400, True, "end"))
-    b.append(t(22, 68, name, 22, c["text"], 700, ls=-0.3))
+    b.append(t(22, 66, name, 22, c["text"], 700, ls=-0.3))
     lines = wrap(desc, 13.5, W - 44)
-    assert len(lines) <= 3, (name, lines)
+    assert len(lines) <= 4, (name, lines)
     for i, line in enumerate(lines):
-        b.append(t(22, 94 + i * 19, line, 13.5, c["muted"]))
+        b.append(t(22, 92 + i * 19, line, 13.5, c["muted"]))
+    assert 92 + (len(lines) - 1) * 19 < H - 68, name
+    # language bar, GitHub style
+    total = sum(langs.values())
+    x = 22.0
+    segs = []
+    for lang, n in sorted(langs.items(), key=lambda kv: -kv[1]):
+        w = (W - 44) * n / total
+        segs.append(f'<rect x="{x:.2f}" y="{H-56}" width="{w + 0.5:.2f}" height="6" fill="{LANG_COLORS[lang]}"/>')
+        x += w
+    b.append(f'<g clip-path="url(#bar)">{"".join(segs)}</g>')
+    # legend (top languages) + facts on the right
     x = 22
-    for lab in chips:
-        s, w = chip(x, H - 42, lab, c, size=11.5, h=24)
-        b.append(s)
-        x += w + 7
-    assert x < W - 10, (name, x)
-    write(f"card-{key}", theme, svg(W, H, "".join(b), f"{name}: {desc}"))
+    for lang, n in sorted(langs.items(), key=lambda kv: -kv[1])[:3]:
+        pct = 100 * n / total
+        if pct < 2:
+            continue
+        lab = f"{lang.replace('Jupyter Notebook', 'Jupyter')} {pct:.0f}%"
+        b.append(f'<circle cx="{x + 4}" cy="{H - 27}" r="4" fill="{LANG_COLORS[lang]}"/>')
+        b.append(t(x + 13, H - 23, lab, 11.5, c["muted"]))
+        x += 13 + tw(lab, 11.5) + 12
+    right = "  ·  ".join(facts)
+    assert x + tw(right, 11.5, True) < W - 22, (name, x)
+    b.append(t(W - 22, H - 23, right, 11.5, c["text"], 600, anchor="end"))
+    write(f"card-{key}", theme, svg(W, H, "".join(b), f"{name}: {desc} ({', '.join(facts)})"))
 
 
 # ---------------------------------------------------------------- experience timeline
 EXPERIENCE = [
-    ("2026 – now", "Upwork", "Lead AI Research Scientist",
+    ("2026 – now", "Upwork", "Lead AI Research Scientist", "green",
      "Lead a 5-person team owning the job-post model behind Upwork's AI agent: post-training, continual "
      "learning, LLM-judge evals, A/B tests.", "1M+ daily users"),
-    ("2024 – 2026", "Huawei Noah's Ark Lab", "Senior AI Researcher",
+    ("2024 – 2026", "Huawei Noah's Ark Lab", "Senior AI Researcher", "pink",
      "Post-trained robot VLAs (π0.5, GR00T, OpenVLA) and DiT world models; zero-shot 6D/9DoF pose "
      "estimation for warehouse robots.", "1st · NeurIPS BEHAVIOR"),
-    ("2023 – 2024", "Vector Institute", "Machine Learning Engineer",
+    ("2023 – 2024", "Vector Institute", "Machine Learning Engineer", "purple",
      "Multi-agent LLM workflows, hybrid RAG and pre-deployment LLM evaluation for CIBC and TD; trained 40+ "
      "startup engineers.", "+15% retrieval MRR"),
-    ("2021 – 2023", "Trans-Plan", "Machine Learning Engineer",
+    ("2021 – 2023", "Trans-Plan", "Machine Learning Engineer", "amber",
      "Shipped a multi-camera 3D perception stack (detection, tracking, Re-ID, BEV) for traffic analytics.",
      "+28% MOTA"),
 ]
@@ -239,25 +302,24 @@ def timeline(c, theme):
     W, row = 880, 84
     H = 24 + row * len(EXPERIENCE)
     lx = 150
-    b = [f'<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{c["a1"]}"/>'
-         f'<stop offset="1" stop-color="{c["a2"]}" stop-opacity="0.3"/></linearGradient></defs>',
-         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="14" fill="{c["card"]}" stroke="{c["border"]}"/>',
-         f'<line x1="{lx}" y1="36" x2="{lx}" y2="{H - 30}" stroke="url(#g)" stroke-width="2"/>']
-    for i, (when, org, role, desc, hl) in enumerate(EXPERIENCE):
+    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="14" fill="{c["card"]}" stroke="{c["border"]}"/>']
+    for i in range(len(EXPERIENCE) - 1):
+        y1, y2 = 40 + i * row, 40 + (i + 1) * row
+        b.append(f'<line x1="{lx}" y1="{y1}" x2="{lx}" y2="{y2}" stroke="{c[EXPERIENCE[i + 1][3]]}" '
+                 f'stroke-width="2" opacity="0.55"/>')
+    for i, (when, org, role, hue, desc, hl) in enumerate(EXPERIENCE):
         y = 40 + i * row
         b.append(t(lx - 22, y + 5, when, 12.5, c["muted"], 500, True, "end"))
         if i == 0:
-            b.append(f'<circle cx="{lx}" cy="{y}" r="11" fill="{c["a1"]}" opacity="0.18">'
+            b.append(f'<circle cx="{lx}" cy="{y}" r="11" fill="{c[hue]}" opacity="0.2">'
                      f'<animate attributeName="r" values="7;13;7" dur="2.6s" repeatCount="indefinite"/></circle>')
-        b.append(f'<circle cx="{lx}" cy="{y}" r="6" fill="{c["card"]}" stroke="{c["a1"] if i == 0 else c["a2"]}" '
-                 f'stroke-width="2.2"/>')
+        b.append(f'<circle cx="{lx}" cy="{y}" r="6" fill="{c["card"]}" stroke="{c[hue]}" stroke-width="2.4"/>')
         b.append(f'<text x="{lx + 24}" y="{y + 6}" font-family="{SANS}" font-size="17" fill="{c["text"]}">'
                  f'<tspan font-weight="700">{escape(org)}</tspan>'
                  f'<tspan fill="{c["muted"]}" font-weight="400">  ·  {escape(role)}</tspan></text>')
-        s, w = chip(0, 0, hl, c, size=11.5, h=24, mono=True, color=c["a1"])
+        s, w = chip(0, 0, hl, c, size=11.5, h=24, mono=True, color=c[hue])
         b.append(f'<g transform="translate({W - 24 - w:.1f},{y - 12})">{s}</g>')
-        head = tw(org, 17, True) + tw(f"  ·  {role}", 17)
-        assert lx + 24 + head < W - 30 - w, org
+        assert lx + 24 + tw(org, 17, True) + tw(f"  ·  {role}", 17) < W - 30 - w, org
         lines = wrap(desc, 13, W - lx - 24 - 30)
         assert len(lines) <= 2, (org, lines)
         for j, line in enumerate(lines):
@@ -268,30 +330,33 @@ def timeline(c, theme):
 
 # ---------------------------------------------------------------- toolbox
 STACK = [
-    ("Training", ["PyTorch", "JAX", "DeepSpeed", "FSDP", "TRL", "PEFT", "LoRA / QLoRA", "SFT · DPO · GRPO"]),
-    ("Serving & agents", ["vLLM", "SGLang", "TensorRT", "Triton", "LangGraph", "MCP", "RAG", "LLM-as-a-judge"]),
-    ("Robotics", ["Isaac Sim", "MuJoCo", "ManiSkill", "OmniGibson", "LeRobot", "CALVIN", "ROS 2"]),
-    ("Vision", ["SAM2", "DINOv2", "Diffusers", "Open3D", "PyTorch3D", "OpenCV", "OpenGL"]),
-    ("Infra", ["Python", "C++", "AWS", "Slurm", "Kubernetes", "Ray", "Docker", "W&B"]),
+    ("Training", "blue", ["PyTorch", "JAX", "DeepSpeed", "FSDP", "TRL", "PEFT", "LoRA / QLoRA", "SFT · DPO · GRPO"]),
+    ("Serving & agents", "purple", ["vLLM", "SGLang", "TensorRT", "Triton", "LangGraph", "MCP", "RAG",
+                                    "LLM-as-a-judge"]),
+    ("Robotics", "pink", ["Isaac Sim", "MuJoCo", "ManiSkill", "OmniGibson", "LeRobot", "CALVIN", "ROS 2"]),
+    ("Vision", "amber", ["SAM2", "DINOv2", "Diffusers", "Open3D", "PyTorch3D", "OpenCV", "OpenGL"]),
+    ("Infra", "teal", ["Python", "C++", "AWS", "Slurm", "Kubernetes", "Ray", "Docker", "W&B"]),
 ]
 
 
 def toolbox(c, theme):
     W, row = 880, 44
     H = 28 + row * len(STACK)
-    colors = [c["a1"], c["a2"], c["a3"], c["a1"], c["a2"]]
     b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="14" fill="{c["card"]}" stroke="{c["border"]}"/>']
-    for i, (cat, items) in enumerate(STACK):
+    for i, (cat, hue, items) in enumerate(STACK):
         y = 20 + i * row
-        b.append(f'<circle cx="30" cy="{y + 12}" r="4" fill="{colors[i]}"/>')
-        b.append(t(44, y + 16.5, cat, 13, c["text"], 600))
+        b.append(f'<rect x="26" y="{y + 5}" width="4" height="15" rx="2" fill="{c[hue]}"/>')
+        b.append(t(42, y + 16.5, cat, 13, c["text"], 600))
         x = 190
         for it in items:
-            s, w = chip(x, y, it, c, size=12, h=25)
-            b.append(s)
+            w = tw(it, 12) + 20
+            b.append(f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="25" rx="12.5" fill="{c["chip"]}" '
+                     f'stroke="{c[hue]}" stroke-opacity="0.45"/>'
+                     + t(x + w / 2, y + 12.5 + 12 * 0.36, it, 12, c["text"], 500, anchor="middle"))
             x += w + 8
         assert x < W - 16, (cat, x)
-    write("toolbox", theme, svg(W, H, "".join(b), "Toolbox: " + "; ".join(f"{k}: {', '.join(v)}" for k, v in STACK)))
+    write("toolbox", theme, svg(W, H, "".join(b), "Toolbox: " + "; ".join(
+        f"{k}: {', '.join(v)}" for k, _, v in STACK)))
 
 
 for theme, c in THEMES.items():

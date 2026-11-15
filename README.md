@@ -1,7 +1,7 @@
 <a href="https://sajjadpsavoji.github.io">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-    <img src="assets/banner-light.svg" width="100%" alt="Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork. I train, post-train and evaluate foundation models, from LLM agents and VLMs to robot VLAs and world models.">
+    <img src="assets/banner-light.svg" width="100%" alt="Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork. I post-train foundation models and keep them improving after they ship: today the LLM behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.">
   </picture>
 </a>
 
@@ -16,41 +16,24 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/highlights-dark.svg">
-  <img src="assets/highlights-light.svg" width="100%" alt="Highlights: 1st place, NeurIPS 2026 BEHAVIOR Challenge. 1M+ daily users on the model my team post-trains. 13 papers and preprints on LLMs, robots and 3D vision. 3 patents on robot VLAs, world models and 3D vision.">
+  <img src="assets/highlights-light.svg" width="100%" alt="Highlights: 1st place in the NeurIPS 2026 BEHAVIOR Challenge with team The North Star. 1M+ daily users on the LLM my team post-trains at Upwork. 13 papers and preprints on LLM post-training and evaluation, robot VLAs and world models, and 6D pose estimation. 3 patents filed on robot VLAs, world models and 3D vision.">
 </picture>
 
 ## About
 
-I'm an AI research scientist with 6+ years of experience training, post-training and evaluating foundation models.
-At **Upwork** I lead the team that owns the job-post generation model behind Upwork's AI agent. We replaced a paid
-API model in production with a post-trained open model that is cheaper and rated higher, and we keep improving it
-through a continual-learning data flywheel. Before that, at **Huawei Noah's Ark Lab**, I post-trained robot VLAs and
-world models, and our team, The North Star, won the **NeurIPS 2026 BEHAVIOR Challenge**. I also release open
-research with **[Forall Labs](https://forall-labs.github.io)**.
+I take foundation models from research to real use: I post-train them on real data, measure exactly where they fail, and keep them improving after people start using them. Over the last six years that has meant LLMs in production, robot policies in simulation and on hardware, and 3D vision for warehouses and city streets.
 
-My focus now is **multimodal agents that learn continually from real-world feedback**.
+**What I do now: LLMs at Upwork.** I lead a five-person team that owns the model writing job posts inside Upwork's AI agent, used by more than a million people a day. We replaced a paid API model with an open Qwen model that we post-train ourselves on 100+ GPUs. It costs about 70% less, judges rate its posts 18% higher, and in A/B tests it raised post-to-hire conversion by 9%. The product keeps changing, so I built the loop that keeps the model current: it picks which new data is worth training on by matching gradients, guards against forgetting old skills, scores outputs with a panel of LLM judges we calibrated, and ships changes through A/B tests.
+
+**Before that: robots at Huawei Noah's Ark Lab.** I post-trained vision-language-action policies (π0.5, GR00T, OpenVLA) and video world models for long household tasks, generated synthetic training scenes with diffusion models, and built simulation benchmarks that show where robot policies break: clutter, distractors and new environments. Our team, The North Star, won the NeurIPS 2026 BEHAVIOR Challenge. I also built zero-shot 6D and 9DoF pose estimation, so warehouse robots can pick up boxes and objects they have never seen, even when they are partly hidden.
+
+**Earlier:** at the Vector Institute I built multi-agent LLM workflows, RAG and evaluation for banks (CIBC, TD), and at Trans-Plan I shipped a multi-camera 3D tracking system for traffic analytics.
+
+**On the side:** I run open studies with [Forall Labs](https://forall-labs.github.io), such as how robot policies cope when a task changes halfway through and how open LLMs fail at writing robot code (below).
+
+**Next:** multimodal agents that keep learning from real-world feedback.
 
 📄 **[Read my CV (PDF)](https://github.com/SajjadPSavoji/Resume/blob/master/Sajjad_Pakdamansavoji_CV.pdf)** · [LaTeX source](https://github.com/SajjadPSavoji/Resume)
-
-<table>
-  <tr>
-    <td width="33%" valign="top">
-      <h4>LLMs &amp; agents</h4>
-      Post-training and continual learning at production scale: label-free gradient matching for data selection,
-      forgetting mitigation, and LLM-as-a-judge evaluation you can trust.
-    </td>
-    <td width="33%" valign="top">
-      <h4>Embodied AI</h4>
-      Post-training robot VLAs (π0.5, GR00T, OpenVLA) and DiT world models, plus benchmarks that show where
-      manipulation policies break in the open world.
-    </td>
-    <td width="33%" valign="top">
-      <h4>3D &amp; multimodal vision</h4>
-      Zero-shot 6D/9DoF pose estimation under occlusion, multi-camera 3D perception, and small VLMs for
-      document understanding.
-    </td>
-  </tr>
-</table>
 
 ## Featured open source
 
