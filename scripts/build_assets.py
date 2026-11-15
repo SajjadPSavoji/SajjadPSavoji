@@ -23,12 +23,12 @@ MONO = "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mo
 THEMES = {
     "dark": dict(card="#151b23", card2="#10161e", border="#2a313c", text="#e6edf3", muted="#9198a1",
                  faint="#363d47", grid="#1f2630", chip="#1b2330", track="#262d37",
-                 blue="#7aa2ff", teal="#3fd0c9", purple="#c297ff", amber="#f2b552", pink="#ff7eb6",
+                 blue="#7aa2ff", teal="#3fd0c9", amber="#f2b552", coral="#ff8f7a",
                  green="#6fd08c",
                  b1="#6f97ff", b2="#93b2ff", b3="#b9cdff", b4="#dfe8ff", wash="#eef3ff"),
     "light": dict(card="#f6f8fa", card2="#ffffff", border="#d1d9e0", text="#1f2328", muted="#59636e",
                   faint="#c8d1da", grid="#e3e8ee", chip="#ffffff", track="#e3e8ee",
-                  blue="#3657d6", teal="#0b8a83", purple="#7c4dce", amber="#b26a00", pink="#c2367a",
+                  blue="#3657d6", teal="#0b8a83", amber="#b26a00", coral="#c4472f",
                   green="#2c8a4b",
                   b1="#2f54d1", b2="#5677e0", b3="#87a0ec", b4="#b3c4f4", wash="#e9effd"),
 }
@@ -73,21 +73,16 @@ def t(x, y, s, size, fill, weight=400, mono=False, anchor="start", ls=None):
             f'fill="{fill}" text-anchor="{anchor}"{lsp}>{escape(s)}</text>')
 
 
-def dot_chip(x, y, label, c, hue, size=12, h=26):
-    """Pill with a colored dot: the colored dot carries the hue, the text stays readable."""
-    w = tw(label, size) + 34
+RADIUS = 12  # one radius for every card, tile and panel
+
+
+def tchip(x, y, label, c, hue, size=12, h=25):
+    """The one chip style: neutral fill, outline tinted with the hue, text in the text colour."""
+    w = tw(label, size) + 20
     s = (f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" fill="{c["chip"]}" '
-         f'stroke="{c["border"]}"/>'
-         f'<circle cx="{x + 14:.1f}" cy="{y + h/2}" r="4" fill="{c[hue]}"/>'
-         + t(x + 24, y + h / 2 + size * 0.36, label, size, c["text"], 500))
+         f'stroke="{c[hue]}" stroke-opacity="0.5"/>'
+         + t(x + w / 2, y + h / 2 + size * 0.36, label, size, c["text"], 500, anchor="middle"))
     return s, w
-
-
-def chip(x, y, label, c, size=12, h=24, color=None, mono=False):
-    w = tw(label, size, mono=mono) + 20
-    return (f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="{h}" rx="{h/2}" fill="{c["chip"]}" '
-            f'stroke="{c["border"]}"/>'
-            + t(x + w / 2, y + h / 2 + size * 0.36, label, size, color or c["text"], 500, mono, "middle")), w
 
 
 def write(name, theme, content):
@@ -97,13 +92,13 @@ def write(name, theme, content):
 # ---------------------------------------------------------------- banner
 BANNER_TEXT = ("I post-train foundation models and keep them improving after they ship: today the LLM "
                "behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.")
-BANNER_CHIPS = [("LLM post-training", "blue"), ("Continual learning", "green"), ("LLM evaluation", "purple"),
-                ("Robot VLAs", "pink"), ("World models", "amber"), ("3D vision", "teal")]
+BANNER_CHIPS = [("LLM post-training", "blue"), ("Continual learning", "green"), ("LLM evaluation", "teal"),
+                ("Robot VLAs", "coral"), ("World models", "amber"), ("3D vision", "blue")]
 
 
 def banner(c, theme):
     W, H = 880, 320
-    hues = ["blue", "purple", "pink", "amber"]
+    hues = ["blue", "teal", "coral", "amber"]
     b = [f'<defs>'
          f'<linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["card"]}"/>'
          f'<stop offset="1" stop-color="{c["card2"]}"/></linearGradient>'
@@ -114,9 +109,9 @@ def banner(c, theme):
          f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["blue"]}" '
          f'stop-opacity="{0.16 if theme == "dark" else 0.08}"/><stop offset="1" stop-color="{c["blue"]}" '
          f'stop-opacity="0"/></radialGradient>'
-         f'<clipPath id="clip"><rect x="1" y="1" width="{W-2}" height="{H-2}" rx="16"/></clipPath>'
+         f'<clipPath id="clip"><rect x="1" y="1" width="{W-2}" height="{H-2}" rx="{RADIUS}"/></clipPath>'
          f'</defs>',
-         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="16" fill="url(#bgg)" stroke="{c["border"]}"/>',
+         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="url(#bgg)" stroke="{c["border"]}"/>',
          f'<g clip-path="url(#clip)">',
          f'<rect x="0" y="0" width="{W}" height="4" fill="url(#rb)"/>']
     for gx in range(580, W, 22):
@@ -135,7 +130,7 @@ def banner(c, theme):
     for k, r in enumerate(routes):
         pts = [nodes[l][n] for l, n in r]
         d = "M" + " L".join(f"{x},{y}" for x, y in pts)
-        hue = ["blue", "pink", "amber"][k]
+        hue = ["blue", "coral", "amber"][k]
         b.append(f'<path d="{d}" fill="none" stroke="{c[hue]}" stroke-width="1.6" opacity="0.5"/>')
         dur = 3.2 + k * 0.7
         b.append(f'<circle r="3.2" fill="{c[hue]}"><animateMotion dur="{dur}s" repeatCount="indefinite" '
@@ -152,7 +147,6 @@ def banner(c, theme):
         b.append(t(xs[li], 248, lab, 11.5, c[hues[li]], 600, True, "middle"))
     for li in range(3):
         b.append(t((xs[li] + xs[li + 1]) / 2, 248, "→", 11.5, c["muted"], 400, True, "middle"))
-    b.append(t(727, 270, "the loop I run, for LLMs and robots", 11, c["muted"], 400, True, "middle"))
     b.append('</g>')
     # left text block
     x0 = 44
@@ -165,13 +159,13 @@ def banner(c, theme):
     for i, line in enumerate(lines):
         b.append(t(x0, 160 + i * 22, line, 15, c["muted"]))
     x, y = x0, 160 + len(lines) * 22 + 6
-    for lab, hue in BANNER_CHIPS:
-        s, w = dot_chip(x, y, lab, c, hue, size=12, h=26)
-        if x + w > 560:
+    for i, (lab, hue) in enumerate(BANNER_CHIPS):
+        if i == 3:  # two even rows of three
             x, y = x0, y + 34
-            s, w = dot_chip(x, y, lab, c, hue, size=12, h=26)
+        s, w = tchip(x, y, lab, c, hue, size=12, h=26)
         b.append(s)
         x += w + 8
+        assert x < 580, lab
     assert y + 26 < H - 14, f"banner chips overflow: {y}"
     write("banner", theme, svg(W, H, "".join(b), "Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork. "
                                + BANNER_TEXT))
@@ -183,7 +177,7 @@ HIGHLIGHTS = [
      "Our household-robot team, The North Star, won it after placing 4th in 2025."),
     ("1M+", "blue", "daily users at Upwork",
      "My team's post-trained LLM writes job posts in Upwork's AI agent, replacing a paid API model."),
-    ("13", "purple", "papers and preprints",
+    ("13", "coral", "papers and preprints",
      "On LLM post-training and evaluation, robot VLAs and world models, and 6D pose estimation."),
     ("3", "teal", "patents filed",
      "On robot VLAs, world models and 3D vision, filed during my time at Huawei Noah's Ark Lab."),
@@ -196,7 +190,7 @@ def highlights(c, theme):
     b = []
     for i, (num, hue, head, body) in enumerate(HIGHLIGHTS):
         x = i * (tw_ + gap)
-        b.append(f'<rect x="{x + 0.5}" y="0.5" width="{tw_ - 1}" height="{H - 1}" rx="12" fill="{c["card"]}" '
+        b.append(f'<rect x="{x + 0.5}" y="0.5" width="{tw_ - 1}" height="{H - 1}" rx="{RADIUS}" fill="{c["card"]}" '
                  f'stroke="{c["border"]}"/>')
         b.append(f'<rect x="{x + 18}" y="18" width="24" height="3" rx="1.5" fill="{c[hue]}"/>')
         b.append(t(x + 18, 56, num, 30, c[hue], 700, ls=-0.5))
@@ -244,9 +238,9 @@ PROJECTS = [
 
 def card(c, theme, key, name, kicker, owner, desc, langs, facts):
     W, H = 432, 226
-    b = [f'<defs><clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12"/></clipPath>'
+    b = [f'<defs><clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}"/></clipPath>'
          f'<clipPath id="bar"><rect x="22" y="{H-56}" width="{W-44}" height="6" rx="3"/></clipPath></defs>',
-         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="12" fill="{c["card"]}" stroke="{c["border"]}"/>',
+         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="{c["card"]}" stroke="{c["border"]}"/>',
          f'<linearGradient id="tb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["b1"]}"/>'
          f'<stop offset="1" stop-color="{c["wash"]}"/></linearGradient>',
          f'<rect x="0" y="0" width="{W}" height="4" fill="url(#tb)" clip-path="url(#cc)"/>']
@@ -290,10 +284,10 @@ EXPERIENCE = [
     ("2026 – now", "Upwork", "Lead AI Research Scientist", "green",
      "Lead a 5-person team owning the job-post model behind Upwork's AI agent: post-training, continual "
      "learning, LLM-judge evals, A/B tests.", "1M+ daily users"),
-    ("2024 – 2026", "Huawei Noah's Ark Lab", "Senior AI Researcher", "pink",
+    ("2024 – 2026", "Huawei Noah's Ark Lab", "Senior AI Researcher", "coral",
      "Post-trained robot VLAs (π0.5, GR00T, OpenVLA) and DiT world models; zero-shot 6D/9DoF pose "
      "estimation for warehouse robots.", "1st · NeurIPS BEHAVIOR"),
-    ("2023 – 2024", "Vector Institute", "Machine Learning Engineer", "purple",
+    ("2023 – 2024", "Vector Institute", "Machine Learning Engineer", "teal",
      "Multi-agent LLM workflows, hybrid RAG and pre-deployment LLM evaluation for CIBC and TD; trained 40+ "
      "startup engineers.", "+15% retrieval MRR"),
     ("2021 – 2023", "Trans-Plan", "Machine Learning Engineer", "amber",
@@ -306,7 +300,7 @@ def timeline(c, theme):
     W, row = 880, 84
     H = 24 + row * len(EXPERIENCE)
     lx = 150
-    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="14" fill="{c["card"]}" stroke="{c["border"]}"/>']
+    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="{c["card"]}" stroke="{c["border"]}"/>']
     for i in range(len(EXPERIENCE) - 1):
         y1, y2 = 40 + i * row, 40 + (i + 1) * row
         b.append(f'<line x1="{lx}" y1="{y1}" x2="{lx}" y2="{y2}" stroke="{c[EXPERIENCE[i + 1][3]]}" '
@@ -321,7 +315,7 @@ def timeline(c, theme):
         b.append(f'<text x="{lx + 24}" y="{y + 6}" font-family="{SANS}" font-size="17" fill="{c["text"]}">'
                  f'<tspan font-weight="700">{escape(org)}</tspan>'
                  f'<tspan fill="{c["muted"]}" font-weight="400">  ·  {escape(role)}</tspan></text>')
-        s, w = chip(0, 0, hl, c, size=11.5, h=24, mono=True, color=c[hue])
+        s, w = tchip(0, 0, hl, c, hue, size=11.5, h=24)
         b.append(f'<g transform="translate({W - 24 - w:.1f},{y - 12})">{s}</g>')
         assert lx + 24 + tw(org, 17, True) + tw(f"  ·  {role}", 17) < W - 30 - w, org
         lines = wrap(desc, 13, W - lx - 24 - 30)
@@ -335,9 +329,9 @@ def timeline(c, theme):
 # ---------------------------------------------------------------- toolbox
 STACK = [
     ("Training", "blue", ["PyTorch", "JAX", "DeepSpeed", "FSDP", "TRL", "PEFT", "LoRA / QLoRA", "SFT · DPO · GRPO"]),
-    ("Serving & agents", "purple", ["vLLM", "SGLang", "TensorRT", "Triton", "LangGraph", "MCP", "RAG",
+    ("Serving & agents", "green", ["vLLM", "SGLang", "TensorRT", "Triton", "LangGraph", "MCP", "RAG",
                                     "LLM-as-a-judge"]),
-    ("Robotics", "pink", ["Isaac Sim", "MuJoCo", "ManiSkill", "OmniGibson", "LeRobot", "CALVIN", "ROS 2"]),
+    ("Robotics", "coral", ["Isaac Sim", "MuJoCo", "ManiSkill", "OmniGibson", "LeRobot", "CALVIN", "ROS 2"]),
     ("Vision", "amber", ["SAM2", "DINOv2", "Diffusers", "Open3D", "PyTorch3D", "OpenCV", "OpenGL"]),
     ("Infra", "teal", ["Python", "C++", "AWS", "Slurm", "Kubernetes", "Ray", "Docker", "W&B"]),
 ]
@@ -346,24 +340,66 @@ STACK = [
 def toolbox(c, theme):
     W, row = 880, 44
     H = 28 + row * len(STACK)
-    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="14" fill="{c["card"]}" stroke="{c["border"]}"/>']
+    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="{c["card"]}" stroke="{c["border"]}"/>']
     for i, (cat, hue, items) in enumerate(STACK):
         y = 20 + i * row
         b.append(f'<rect x="26" y="{y + 5}" width="4" height="15" rx="2" fill="{c[hue]}"/>')
         b.append(t(42, y + 16.5, cat, 13, c["text"], 600))
         x = 190
         for it in items:
-            w = tw(it, 12) + 20
-            b.append(f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="25" rx="12.5" fill="{c["chip"]}" '
-                     f'stroke="{c[hue]}" stroke-opacity="0.45"/>'
-                     + t(x + w / 2, y + 12.5 + 12 * 0.36, it, 12, c["text"], 500, anchor="middle"))
+            s_, w = tchip(x, y, it, c, hue)
+            b.append(s_)
             x += w + 8
         assert x < W - 16, (cat, x)
     write("toolbox", theme, svg(W, H, "".join(b), "Toolbox: " + "; ".join(
         f"{k}: {', '.join(v)}" for k, _, v in STACK)))
 
 
+# ---------------------------------------------------------------- link buttons
+# Real marks from the taste-skill icon resolver (assets/icons, credits in icons-credits.json).
+# (file, label, icon file or None, how to colour it)
+LINKS = [
+    ("website", "Website", "ui-globe", "blue"),
+    ("scholar", "Google Scholar", "googlescholar", None),
+    ("huggingface", "Hugging Face", "hugging-face", None),
+    ("linkedin", "LinkedIn", "linkedin", None),
+    ("x", "X", "x", "ink"),
+    ("forall", "Forall Labs", None, "blue"),
+    ("cv", "Read my CV (PDF)", "ui-file-text", "blue"),
+]
+
+
+def icon(name, x, y, size, c, tone):
+    import re
+    src = (OUT / "icons" / f"{name}.svg").read_text()
+    vb = re.search(r'viewBox="([^"]+)"', src).group(1)
+    inner = re.sub(r"^<svg[^>]*>|</svg>\s*$", "", src.strip())
+    if tone == "ink":
+        # a black mark (X) takes the text colour, so it reads on both themes
+        inner = re.sub(r'fill="#0{3}(0{3})?"', f'fill="{c["text"]}"', inner)
+        inner = f'<g fill="{c["text"]}">{inner}</g>'
+    colour = f' color="{c[tone]}"' if tone in ("blue", "teal", "amber", "coral", "green") else ""
+    fill = ' fill="#4285F4"' if name == "googlescholar" else ""
+    return (f'<svg x="{x}" y="{y}" width="{size}" height="{size}" viewBox="{vb}"{colour}{fill} '
+            f'preserveAspectRatio="xMidYMid meet">{inner}</svg>')
+
+
+def link_button(c, theme, key, label, ic, tone):
+    H, pad, isz, gap = 34, 13, 16, 8
+    lw = tw(label, 13, True)
+    W = round(pad + isz + gap + lw + pad)
+    b = [f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="8" fill="{c["card"]}" stroke="{c["border"]}"/>']
+    if ic:
+        b.append(icon(ic, pad, (H - isz) / 2, isz, c, tone))
+    else:  # Forall Labs has no mark; its name is the symbol for "for all"
+        b.append(t(pad + isz / 2, H / 2 + 6, "∀", 17, c[tone], 700, anchor="middle"))
+    b.append(t(pad + isz + gap, H / 2 + 4.6, label, 13, c["text"], 600))
+    write(f"link-{key}", theme, svg(W, H, "".join(b), label))
+
+
 for theme, c in THEMES.items():
+    for l in LINKS:
+        link_button(c, theme, *l)
     banner(c, theme)
     highlights(c, theme)
     for p in PROJECTS:

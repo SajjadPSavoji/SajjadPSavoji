@@ -1,23 +1,27 @@
+<p>
 <a href="https://sajjadpsavoji.github.io">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
     <img src="assets/banner-light.svg" width="100%" alt="Sajjad Pakdamansavoji, Lead AI Research Scientist at Upwork. I post-train foundation models and keep them improving after they ship: today the LLM behind Upwork's job-post agent, before that robot VLAs and world models at Huawei.">
   </picture>
 </a>
-
-<p align="center">
-  <a href="https://sajjadpsavoji.github.io"><img src="https://img.shields.io/badge/Website-24292f?style=flat-square&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwYXRoIGQ9Ik0yIDEyaDIwTTEyIDJhMTUgMTUgMCAwIDEgMCAyME0xMiAyYTE1IDE1IDAgMCAwIDAgMjAiLz48L3N2Zz4=" alt="Website"></a>
-  <a href="https://scholar.google.com/citations?user=DZzLzNwAAAAJ"><img src="https://img.shields.io/badge/Google_Scholar-24292f?style=flat-square&logo=googlescholar&logoColor=white" alt="Google Scholar"></a>
-  <a href="https://huggingface.co/savoji"><img src="https://img.shields.io/badge/Hugging_Face-24292f?style=flat-square&logo=huggingface&logoColor=white" alt="Hugging Face"></a>
-  <a href="https://www.linkedin.com/in/sajjadpsavoji"><img src="https://img.shields.io/badge/LinkedIn-24292f?style=flat-square&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik00Ljk4IDMuNUM0Ljk4IDQuODggMy44NyA2IDIuNSA2UzAgNC44OCAwIDMuNSAxLjEyIDEgMi41IDFzMi40OCAxLjEyIDIuNDggMi41ek0uNSA4aDR2MTZoLTRWOHptNy41IDBoMy44djIuMmguMDVjLjUzLTEgMS44My0yLjIgMy43Ny0yLjIgNC4wMyAwIDQuNzggMi42NSA0Ljc4IDYuMVYyNGgtNHYtOC4xYzAtMS45My0uMDMtNC40Mi0yLjctNC40Mi0yLjcgMC0zLjEgMi4xLTMuMSA0LjI4VjI0aC00Vjh6Ii8+PC9zdmc+" alt="LinkedIn"></a>
-  <a href="https://x.com/saavoji"><img src="https://img.shields.io/badge/X-24292f?style=flat-square&logo=x&logoColor=white" alt="X"></a>
-  <a href="https://forall-labs.github.io"><img src="https://img.shields.io/badge/%E2%88%80_Forall_Labs-24292f?style=flat-square" alt="Forall Labs"></a>
 </p>
 
+<p align="center">
+  <a href="https://sajjadpsavoji.github.io"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-website-dark.svg"><img src="assets/link-website-light.svg" height="34" alt="Website"></picture></a>
+  <a href="https://scholar.google.com/citations?user=DZzLzNwAAAAJ"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-scholar-dark.svg"><img src="assets/link-scholar-light.svg" height="34" alt="Google Scholar"></picture></a>
+  <a href="https://huggingface.co/savoji"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-huggingface-dark.svg"><img src="assets/link-huggingface-light.svg" height="34" alt="Hugging Face"></picture></a>
+  <a href="https://www.linkedin.com/in/sajjadpsavoji"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-linkedin-dark.svg"><img src="assets/link-linkedin-light.svg" height="34" alt="LinkedIn"></picture></a>
+  <a href="https://x.com/saavoji"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-x-dark.svg"><img src="assets/link-x-light.svg" height="34" alt="X"></picture></a>
+  <a href="https://forall-labs.github.io"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-forall-dark.svg"><img src="assets/link-forall-light.svg" height="34" alt="Forall Labs"></picture></a>
+</p>
+
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/highlights-dark.svg">
   <img src="assets/highlights-light.svg" width="100%" alt="Highlights: 1st place in the NeurIPS 2026 BEHAVIOR Challenge with team The North Star. 1M+ daily users on the LLM my team post-trains at Upwork. 13 papers and preprints on LLM post-training and evaluation, robot VLAs and world models, and 6D pose estimation. 3 patents filed on robot VLAs, world models and 3D vision.">
 </picture>
+</p>
 
 ## About
 
@@ -33,7 +37,7 @@ I take foundation models from research to real use: I post-train them on real da
 
 **Next:** multimodal agents that keep learning from real-world feedback.
 
-📄 **[Read my CV (PDF)](https://github.com/SajjadPSavoji/Resume/blob/master/Sajjad_Pakdamansavoji_CV.pdf)** · [LaTeX source](https://github.com/SajjadPSavoji/Resume)
+<a href="https://github.com/SajjadPSavoji/Resume/blob/master/Sajjad_Pakdamansavoji_CV.pdf"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-cv-dark.svg"><img src="assets/link-cv-light.svg" height="34" alt="Read my CV (PDF)"></picture></a>
 
 ## Featured open source
 
@@ -69,19 +73,23 @@ I take foundation models from research to real use: I post-train them on real da
 
 ## Experience
 
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/experience-dark.svg">
   <img src="assets/experience-light.svg" width="100%" alt="Experience: Lead AI Research Scientist at Upwork (2026 to now); Senior AI Researcher at Huawei Noah's Ark Lab (2024 to 2026); Machine Learning Engineer at Vector Institute (2023 to 2024); Machine Learning Engineer at Trans-Plan (2021 to 2023).">
 </picture>
+</p>
 
 **Education:** M.Sc. Computer Science, York University · B.Sc. Electrical Engineering, University of Tehran
 
 ## Toolbox
 
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/toolbox-dark.svg">
   <img src="assets/toolbox-light.svg" width="100%" alt="Toolbox. Training: PyTorch, JAX, DeepSpeed, FSDP, TRL, PEFT, LoRA/QLoRA, SFT, DPO, GRPO. Serving and agents: vLLM, SGLang, TensorRT, Triton, LangGraph, MCP, RAG, LLM-as-a-judge. Robotics: Isaac Sim, MuJoCo, ManiSkill, OmniGibson, LeRobot, CALVIN, ROS 2. Vision: SAM2, DINOv2, Diffusers, Open3D, PyTorch3D, OpenCV, OpenGL. Infra: Python, C++, AWS, Slurm, Kubernetes, Ray, Docker, Weights and Biases.">
 </picture>
+</p>
 
 ## Recent
 
@@ -92,4 +100,4 @@ I take foundation models from research to real use: I post-train them on real da
 
 ---
 
-<p align="center"><sub>Say hello on <a href="https://www.linkedin.com/in/sajjadpsavoji">LinkedIn</a> or through <a href="https://sajjadpsavoji.github.io/contact.html">my website</a>. More work at <a href="https://sajjadpsavoji.github.io/projects.html">sajjadpsavoji.github.io</a>.</sub></p>
+<p align="center"><sub>Say hello on <a href="https://www.linkedin.com/in/sajjadpsavoji">LinkedIn</a> or through <a href="https://sajjadpsavoji.github.io/contact.html">my website</a>. More work at <a href="https://sajjadpsavoji.github.io/projects.html">sajjadpsavoji.github.io</a>.<br>Icons: Lucide (ISC), Simple Icons and SVG Logos (CC0); brand marks belong to their owners.</sub></p>
