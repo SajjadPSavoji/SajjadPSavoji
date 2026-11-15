@@ -101,24 +101,19 @@ def banner(c, theme):
     b = [f'<defs>'
          f'<linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["card"]}"/>'
          f'<stop offset="1" stop-color="{c["card2"]}"/></linearGradient>'
-         f'<linearGradient id="rb" x1="0" y1="0" x2="1" y2="0">'
-         + f'<stop offset="0" stop-color="{c["b1"]}"/><stop offset="0.55" stop-color="{c["b3"]}"/>'
-         + f'<stop offset="1" stop-color="{c["wash"]}"/>'
-         + f'</linearGradient>'
          f'<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="{c["blue"]}" '
          f'stop-opacity="{0.16 if theme == "dark" else 0.08}"/><stop offset="1" stop-color="{c["blue"]}" '
          f'stop-opacity="0"/></radialGradient>'
          f'<clipPath id="clip"><rect x="1" y="1" width="{W-2}" height="{H-2}" rx="{RADIUS}"/></clipPath>'
          f'</defs>',
          f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="url(#bgg)" stroke="{c["border"]}"/>',
-         f'<g clip-path="url(#clip)">',
-         f'<rect x="0" y="0" width="{W}" height="4" fill="url(#rb)"/>']
+         f'<g clip-path="url(#clip)">']
     for gx in range(580, W, 22):
         for gy in range(22, H, 22):
             b.append(f'<circle cx="{gx}" cy="{gy}" r="1.2" fill="{c["grid"]}"/>')
     b.append(f'<circle cx="725" cy="150" r="170" fill="url(#glow)"/>')
-    # a small network whose layers are labeled with the loop I run: data -> train -> eval -> ship
-    layers = [[100, 145, 190], [78, 122, 168, 212], [78, 122, 168, 212], [122, 168]]
+    # a small network labeled with the loop I run: data -> train -> eval -> ship, and feedback back to data
+    layers = [[88, 133, 178], [66, 110, 156, 200], [66, 110, 156, 200], [110, 156]]
     xs = [622, 692, 762, 832]
     nodes = [[(xs[i], y) for y in ys] for i, ys in enumerate(layers)]
     for i in range(len(nodes) - 1):
@@ -143,9 +138,20 @@ def banner(c, theme):
                      f'values="0.35;1;0.35" dur="3s" begin="{(li * 0.45 + ni * 0.2) % 3:.2f}s" '
                      f'repeatCount="indefinite"/></circle>')
     for li, lab in enumerate(["data", "train", "eval", "ship"]):
-        b.append(t(xs[li], 248, lab, 11.5, c[hues[li]], 600, True, "middle"))
+        b.append(t(xs[li], 236, lab, 11.5, c[hues[li]], 600, True, "middle"))
     for li in range(3):
-        b.append(t((xs[li] + xs[li + 1]) / 2, 248, "→", 11.5, c["muted"], 400, True, "middle"))
+        b.append(t((xs[li] + xs[li + 1]) / 2, 236, "→", 11.5, c["muted"], 400, True, "middle"))
+    # the flywheel: what ships feeds the next round of data
+    y0 = 246
+    arc = f"M{xs[3]},{y0} C{xs[3] + 6},{y0 + 44} {xs[0] - 6},{y0 + 44} {xs[0]},{y0 + 3}"
+    b.append(f'<path d="{arc}" fill="none" stroke="{c["green"]}" stroke-width="1.6" stroke-dasharray="4 4" '
+             f'opacity="0.8"><animate attributeName="stroke-dashoffset" values="16;0" dur="1.2s" '
+             f'repeatCount="indefinite"/></path>')
+    b.append(f'<path d="M{xs[0] - 4.5},{y0 + 8} L{xs[0]},{y0 + 2} L{xs[0] + 4.5},{y0 + 8}" fill="none" '
+             f'stroke="{c["green"]}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>')
+    b.append(f'<circle r="3.2" fill="{c["green"]}"><animateMotion dur="2.6s" repeatCount="indefinite" '
+             f'path="{arc}"/></circle>')
+    b.append(t((xs[0] + xs[3]) / 2, y0 + 50, "feedback", 11.5, c["green"], 600, True, "middle"))
     b.append('</g>')
     # left text block
     x0 = 44
@@ -393,11 +399,11 @@ EXPERIENCE = [
      "Post-trained robot VLAs (π0.5, GR00T, OpenVLA) and DiT world models; zero-shot 6D/9DoF pose "
      "estimation for warehouse robots.", "1st · NeurIPS BEHAVIOR"),
     ("2023 – 2024", "Vector Institute", "Machine Learning Engineer", "teal",
-     "Multi-agent LLM workflows, hybrid RAG and pre-deployment LLM evaluation for CIBC and TD; trained 40+ "
-     "startup engineers.", "+15% retrieval MRR"),
+     "Multi-agent LLM workflows, hybrid RAG and pre-deployment LLM evaluation for CIBC and TD; ran "
+     "workshops on LoRA fine-tuning and vLLM serving.", "40+ engineers trained"),
     ("2021 – 2023", "Trans-Plan", "Machine Learning Engineer", "amber",
      "Shipped a multi-camera 3D perception stack (detection, tracking, Re-ID, BEV) for traffic analytics.",
-     "+28% MOTA"),
+     "10+ TB ETL pipelines"),
 ]
 
 
@@ -469,7 +475,7 @@ LINKS = [
     ("huggingface", "Hugging Face", "hugging-face", None),
     ("linkedin", "LinkedIn", "linkedin", None),
     ("x", "X", "x", "ink"),
-    ("forall", "Forall Labs", None, "blue"),
+    ("forall", "Forall Labs", "forall-labs", None),
     ("cv", "Read my CV (PDF)", "ui-file-text", "blue"),
 ]
 

@@ -76,7 +76,7 @@ I take foundation models from research to real use: I post-train them on real da
 <p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/experience-dark.svg">
-  <img src="assets/experience-light.svg" width="100%" alt="Experience: Lead AI Research Scientist at Upwork (2026 to now); Senior AI Researcher at Huawei Noah's Ark Lab (2024 to 2026); Machine Learning Engineer at Vector Institute (2023 to 2024); Machine Learning Engineer at Trans-Plan (2021 to 2023).">
+  <img src="assets/experience-light.svg" width="100%" alt="Experience: Lead AI Research Scientist at Upwork (2026 to now); Senior AI Researcher at Huawei Noah's Ark Lab (2024 to 2026); Machine Learning Engineer at Vector Institute (2023 to 2024, trained 40+ engineers); Machine Learning Engineer at Trans-Plan (2021 to 2023, 10+ TB ETL pipelines).">
 </picture>
 </p>
 
