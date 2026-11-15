@@ -4,8 +4,7 @@ Run:  python scripts/build_assets.py   (needs Pillow for text measurement, macOS
 Every visual is a static, self-hosted SVG, so nothing on the profile depends
 on a third-party stats service. Edit the DATA sections and re-run to update.
 
-Repo stats on the project cards (languages, lines, stars) are a snapshot; the language
-bar uses blue shades by share, not GitHub's per-language colors, to keep the cards calm. Refresh with
+Repo stats and result numbers on the project cards are a snapshot (sources listed above PROJECTS). Refresh with
   gh api repos/OWNER/REPO/languages        # bytes per language
   gh api repos/OWNER/REPO --jq .stargazers_count
 and count non-blank lines of tracked source files in a shallow clone.
@@ -207,76 +206,182 @@ def highlights(c, theme):
 
 
 # ---------------------------------------------------------------- project cards
-# (key, name, kicker, owner, description, {language: bytes}, footer facts)
+# Each card shows the project's own result as a small visual (taste-skill: show the real thing).
+# Numbers come from each repo: CALVIN-MAX results/analysis/maxA_core_pooled.json (pooled success),
+# OpenCaP README highlights, AutoPolish README (its loop), awesome-wsp data/entries.json ("added"),
+# MiniVLMDocEval README results table (mean column), colabctl README (commands).
+WSP_GROWTH = [31, 58, 242, 544, 560, 570, 576, 587, 595, 596, 605, 606]  # cumulative, Nov 4 -> Nov 15
+
+# (key, name, kicker, owner, description, visual, language, footer facts)
 PROJECTS = [
     ("calvin-max", "CALVIN-MAX", "ROBOT LEARNING · BENCHMARK", "forall-labs",
-     "What happens when the scene or the instruction changes while a robot is mid-task? 7,828 cases show "
-     "all 10 policies tested, VLAs included, lose 4.4 to 9.9 points.",
-     {"Python": 426057, "HTML": 68733, "Shell": 9602}, ["8.7k lines", "MIT"]),
+     "What happens when the world changes mid-task? 7,828 test cases across 10 released robot "
+     "policies.",
+     ("bars", "TASK SUCCESS, 10 POLICIES POOLED",
+      [("No change", 69.9, "Base"), ("Change before", 60.5, "Pre"), ("Change mid-task", 63.0, "Mid")]),
+     "Python", ["8.7k lines", "MIT"]),
     ("opencap", "OpenCaP", "CODE AS POLICIES · LLM EVAL", "forall-labs",
-     "7,560 trials of 21 open-weight LLMs writing robot code. Each failure gets the smallest fix that "
-     "works in simulation and is sorted into one of six defect types.",
-     {"Python": 1055608, "Shell": 190616, "HTML": 78350}, ["25.5k lines", "MIT"]),
+     "21 open-weight LLMs write robot code in 7,560 trials; each failure gets the smallest fix "
+     "that works.",
+     ("pairs", "SHARE OF FAILING PROGRAMS", ("with helpers (S1)", "low-level API (S3/S4)"),
+      [("Frame errors", 4, 47), ("API misuse", 26, 60)]),
+     "Python", ["25.5k lines", "MIT"]),
     ("autopolish", "AutoPolish", "VISION · IMAGE EDITING", "forall-labs",
-     "A synthetic audience of persona-conditioned Qwen2-VL critics steers FLUX.1 Kontext to make images "
-     "look better, with no training. Agrees with human raters up to 0.96.",
-     {"Python": 573729, "HTML": 55007, "Jupyter Notebook": 24676, "Shell": 7132}, ["12.3k lines", "MIT"]),
+     "Persona VLM critics steer image edits with no training, and agree with human raters at up "
+     "to 0.96.",
+     ("flow", "ONE EDITING ROUND",
+      [("Image", "input"), ("Critics", "Qwen2-VL"), ("Edit", "FLUX Kontext"), ("Keep", "score rises")]),
+     "Python", ["12.3k lines", "MIT"]),
     ("awesome-wsp", "Awesome WSP", "AGENTS · LIVING RESEARCH MAP", "SajjadPSavoji",
-     "A map of LLMs that read, edit and write other networks' weights. An agent I built finds new work "
-     "every day, reviews pull requests and keeps the list current.",
-     {"Python": 14870}, ["606 entries", "★ 4", "CC0"]),
+     "A daily map of LLMs that read, edit and write other networks' weights, kept current by an agent "
+     "I built.",
+     ("growth", "ENTRIES IN THE LIST", WSP_GROWTH, ("Nov 4", "Nov 15")),
+     "Python", ["606 entries", "★ 4", "CC0"]),
     ("minivlmdoceval", "MiniVLMDocEval", "VLMS · DOCUMENT AI", "SajjadPSavoji",
-     "Are sub-1B vision-language models ready for documents? Six open models on five benchmarks; a 450M "
-     "model beat both 0.9B models on ChartQA.",
-     {"Python": 111847, "TeX": 107642, "Jupyter Notebook": 10279, "Shell": 9668}, ["3.7k lines"]),
+     "Six sub-1B VLMs on five document benchmarks; a 450M model beats both 0.9B models on "
+     "ChartQA.",
+     ("bars", "MEAN SCORE, 5 BENCHMARKS",
+      [("Qwen3.5-0.8B", 70.3, ""), ("InternVL3-1B", 63.3, ""), ("LFM2.5-VL-450M", 59.9, ""),
+       ("LLaVA-OV-0.5B", 52.8, ""), ("SmolVLM2-500M", 49.4, ""), ("FastVLM-0.5B", 36.8, "")]),
+     "Python", ["3.7k lines"]),
     ("colabctl", "colabctl", "DEV TOOLING · GPU RUNTIMES", "SajjadPSavoji",
-     "Start, check and shut down Google Colab GPU runtimes from the shell, so scripts and coding agents "
-     "can use them without clicking through a UI.",
-     {"Python": 87615, "Shell": 221}, ["2.0k lines", "stdlib only"]),
+     "Start, check and stop Colab GPU runtimes from the shell, so scripts and coding agents can "
+     "drive them.",
+     ("terminal", "zsh",
+      [("colabctl up -a T4 --bridge", "allocate a T4"), ("colabctl status --quota", "RAM, disk, GPU"),
+       ("colabctl down", "shut it down")]),
+     "Python", ["2.0k lines", "stdlib only"]),
 ]
+LANG_DOT = {"Python": "#3572A5"}  # GitHub's colour for the one language shown
 
 
-def card(c, theme, key, name, kicker, owner, desc, langs, facts):
-    W, H = 432, 226
+def viz_panel(c, x, y, w, h, spec):
+    """The inset panel holding a card's visual: one box inside the card, never deeper."""
+    kind, title = spec[0], spec[1]
+    b = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="{c["card2"]}" stroke="{c["border"]}"/>']
+    px, pw = x + 14, w - 28
+    if kind != "terminal":
+        b.append(t(px, y + 20, title, 10, c["muted"], 600, True, ls=0.6))
+    if kind == "bars":
+        rows = spec[2]
+        top, bottom = y + 32, y + h - 10
+        rh = (bottom - top) / len(rows)
+        lab_w = max(tw(r[0], 10.5, mono=True) for r in rows) + 12
+        track_w = pw - lab_w - 40
+        best = max(r[1] for r in rows)
+        for i, (lab, v, _) in enumerate(rows):
+            cy = top + rh * i + rh / 2
+            bh = min(8, rh * 0.45)
+            b.append(t(px, cy + 3.6, lab, 10.5, c["text"], 500, True))
+            b.append(f'<rect x="{px + lab_w:.1f}" y="{cy - bh/2:.1f}" width="{track_w:.1f}" height="{bh:.1f}" '
+                     f'rx="{bh/2:.1f}" fill="{c["track"]}"/>')
+            fill = c["b1"] if v == best else c["b3"]
+            b.append(f'<rect x="{px + lab_w:.1f}" y="{cy - bh/2:.1f}" width="{track_w * v / 100:.1f}" '
+                     f'height="{bh:.1f}" rx="{bh/2:.1f}" fill="{fill}"/>')
+            b.append(t(px + pw, cy + 3.8, f"{v:.1f}", 11, c["text"], 700, anchor="end"))
+    elif kind == "pairs":
+        (l1, l2), rows = spec[2], spec[3]
+        top, bottom = y + 30, y + h - 26
+        rh = (bottom - top) / len(rows)
+        lab_w = max(tw(r[0], 10.5, mono=True) for r in rows) + 12
+        track_w = pw - lab_w - 78
+        for i, (lab, a, z) in enumerate(rows):
+            cy = top + rh * i + rh / 2
+            b.append(t(px, cy + 3.6, lab, 10.5, c["text"], 500, True))
+            for j, (v, col) in enumerate(((a, c["b3"]), (z, c["b1"]))):
+                by = cy - 8 + j * 9
+                b.append(f'<rect x="{px + lab_w:.1f}" y="{by:.1f}" width="{track_w:.1f}" height="7" rx="3.5" '
+                         f'fill="{c["track"]}"/>')
+                b.append(f'<rect x="{px + lab_w:.1f}" y="{by:.1f}" width="{track_w * v / 100:.1f}" height="7" '
+                         f'rx="3.5" fill="{col}"/>')
+            b.append(f'<text x="{px + pw}" y="{cy + 4:.1f}" font-family="{SANS}" font-size="11" text-anchor="end" '
+                     f'fill="{c["muted"]}">{a}% → <tspan fill="{c["text"]}" font-weight="700">{z}%</tspan></text>')
+        lx = px  # legend along the bottom edge of the panel
+        for lab, col in ((l1, c["b3"]), (l2, c["b1"])):
+            b.append(f'<rect x="{lx}" y="{y + h - 18}" width="8" height="8" rx="2" fill="{col}"/>')
+            b.append(t(lx + 13, y + h - 10.5, lab, 10, c["muted"], 500))
+            lx += 13 + tw(lab, 10) + 18
+    elif kind == "flow":
+        steps = spec[2]
+        n, gap = len(steps), 14
+        nw = (pw - gap * (n - 1)) / n
+        ny, nh = y + 32, 40
+        for i, (name, sub) in enumerate(steps):
+            nx = px + i * (nw + gap)
+            last = i == n - 1
+            b.append(f'<rect x="{nx:.1f}" y="{ny}" width="{nw:.1f}" height="{nh}" rx="8" fill="{c["card"]}" '
+                     f'stroke="{c["b1"] if last else c["border"]}"/>')
+            b.append(t(nx + nw / 2, ny + 17, name, 11.5, c["text"], 700, anchor="middle"))
+            assert tw(sub, 9.5, mono=True) < nw - 6, sub
+            b.append(t(nx + nw / 2, ny + 31, sub, 9.5, c["muted"], 400, True, "middle"))
+            if not last:
+                ax = nx + nw + 3
+                b.append(f'<path d="M{ax:.1f},{ny + nh/2} h{gap - 8}" stroke="{c["b2"]}" stroke-width="1.5"/>'
+                         f'<path d="M{ax + gap - 9:.1f},{ny + nh/2 - 3.5} l4,3.5 l-4,3.5" fill="none" '
+                         f'stroke="{c["b2"]}" stroke-width="1.5"/>')
+        # the loop back from Keep to Critics: the next round
+        x2 = px + 1 * (nw + gap) + nw / 2
+        x4 = px + 3 * (nw + gap) + nw / 2
+        ly = ny + nh + 12
+        b.append(f'<path d="M{x4:.1f},{ny + nh} V{ly} H{x2:.1f} V{ny + nh + 4}" fill="none" stroke="{c["b2"]}" '
+                 f'stroke-width="1.5" stroke-dasharray="3 3"/>'
+                 f'<path d="M{x2 - 3.5:.1f},{ny + nh + 8} l3.5,-4 l3.5,4" fill="none" stroke="{c["b2"]}" '
+                 f'stroke-width="1.5"/>')
+        b.append(t((x2 + x4) / 2, ly - 3, "next round", 9.5, c["muted"], 400, True, "middle"))
+    elif kind == "growth":
+        series, (d0, d1) = spec[2], spec[3]
+        top, bottom = y + 32, y + h - 22
+        lx0, lx1 = px, px + pw - 40
+        mx = max(series)
+        pts = [(lx0 + (lx1 - lx0) * i / (len(series) - 1), bottom - (bottom - top) * v / mx)
+               for i, v in enumerate(series)]
+        line = " L".join(f"{a:.1f},{b_:.1f}" for a, b_ in pts)
+        b.append(f'<line x1="{lx0}" y1="{bottom}" x2="{lx1}" y2="{bottom}" stroke="{c["border"]}"/>')
+        b.append(f'<path d="M{lx0},{bottom} L{line} L{lx1},{bottom} Z" fill="{c["b1"]}" fill-opacity="0.14"/>')
+        b.append(f'<path d="M{line}" fill="none" stroke="{c["b1"]}" stroke-width="2" stroke-linejoin="round"/>')
+        ex, ey = pts[-1]
+        b.append(f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="3.5" fill="{c["b1"]}"/>')
+        b.append(t(ex + 8, ey + 4, f"{series[-1]}", 12, c["text"], 700))
+        b.append(t(lx0, bottom + 14, d0, 9.5, c["muted"], 400, True))
+        b.append(t(lx1, bottom + 14, d1, 9.5, c["muted"], 400, True, "end"))
+    elif kind == "terminal":
+        lines = spec[2]
+        for k in range(3):
+            b.append(f'<circle cx="{px + 4 + k * 13}" cy="{y + 15}" r="4" fill="{c["faint"]}"/>')
+        b.append(t(x + w / 2, y + 19, title, 10, c["muted"], 500, True, "middle"))
+        b.append(f'<line x1="{x}" y1="{y + 27}" x2="{x + w}" y2="{y + 27}" stroke="{c["border"]}"/>')
+        rh = (h - 36) / len(lines)
+        for i, (cmd, note) in enumerate(lines):
+            ly = y + 27 + rh * i + rh / 2 + 4
+            b.append(t(px, ly, "$", 11.5, c["b1"], 700, True))
+            b.append(t(px + 14, ly, cmd, 11.5, c["text"], 500, True))
+            b.append(t(px + pw, ly, f"# {note}", 11, c["muted"], 400, True, "end"))
+            assert tw(cmd, 11.5, mono=True) + tw(f"# {note}", 11, mono=True) + 30 < pw, cmd
+    return "".join(b)
+
+
+def card(c, theme, key, name, kicker, owner, desc, spec, lang, facts):
+    W, H = 432, 292
     b = [f'<defs><clipPath id="cc"><rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}"/></clipPath>'
-         f'<clipPath id="bar"><rect x="22" y="{H-56}" width="{W-44}" height="6" rx="3"/></clipPath></defs>',
-         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="{c["card"]}" stroke="{c["border"]}"/>',
          f'<linearGradient id="tb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{c["b1"]}"/>'
-         f'<stop offset="1" stop-color="{c["wash"]}"/></linearGradient>',
+         f'<stop offset="1" stop-color="{c["wash"]}"/></linearGradient></defs>',
+         f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RADIUS}" fill="{c["card"]}" stroke="{c["border"]}"/>',
          f'<rect x="0" y="0" width="{W}" height="4" fill="url(#tb)" clip-path="url(#cc)"/>']
     b.append(t(22, 34, kicker, 11, c["b1"], 700, True, ls=0.8))
-    shade = {lang: c[f"b{min(i, 3) + 1}"] for i, (lang, _) in
-             enumerate(sorted(langs.items(), key=lambda kv: -kv[1]))}
     b.append(t(W - 22, 34, owner, 11, c["muted"], 400, True, "end"))
     b.append(t(22, 66, name, 22, c["text"], 700, ls=-0.3))
     lines = wrap(desc, 13.5, W - 44)
-    assert len(lines) <= 4, (name, lines)
+    assert len(lines) <= 2, (name, lines)
     for i, line in enumerate(lines):
         b.append(t(22, 92 + i * 19, line, 13.5, c["muted"]))
-    assert 92 + (len(lines) - 1) * 19 < H - 68, name
-    # language bar, GitHub style
-    total = sum(langs.values())
-    x = 22.0
-    segs = []
-    for lang, n in sorted(langs.items(), key=lambda kv: -kv[1]):
-        w = (W - 44) * n / total
-        segs.append(f'<rect x="{x:.2f}" y="{H-56}" width="{w + 0.5:.2f}" height="6" fill="{shade[lang]}"/>')
-        x += w
-    b.append(f'<g clip-path="url(#bar)">{"".join(segs)}</g>')
-    # legend (top languages) + facts on the right
-    x = 22
-    for lang, n in sorted(langs.items(), key=lambda kv: -kv[1])[:3]:
-        pct = 100 * n / total
-        if pct < 2:
-            continue
-        lab = f"{lang.replace('Jupyter Notebook', 'Jupyter')} {pct:.0f}%"
-        b.append(f'<circle cx="{x + 4}" cy="{H - 27}" r="4" fill="{shade[lang]}"/>')
-        b.append(t(x + 13, H - 23, lab, 11.5, c["muted"]))
-        x += 13 + tw(lab, 11.5) + 12
-    right = "  ·  ".join(facts)
-    assert x + tw(right, 11.5, True) < W - 22, (name, x)
-    b.append(t(W - 22, H - 23, right, 11.5, c["text"], 600, anchor="end"))
+    b.append(viz_panel(c, 22, 128, W - 44, 118, spec))
+    # footer: language (GitHub colour), size, licence, stars
+    fy = H - 20
+    b.append(f'<circle cx="26" cy="{fy - 4}" r="4.5" fill="{LANG_DOT[lang]}"/>')
+    b.append(t(36, fy, lang, 12, c["muted"]))
+    b.append(t(W - 22, fy, "  ·  ".join(facts), 12, c["text"], 600, anchor="end"))
     write(f"card-{key}", theme, svg(W, H, "".join(b), f"{name}: {desc} ({', '.join(facts)})"))
+
 
 
 # ---------------------------------------------------------------- experience timeline

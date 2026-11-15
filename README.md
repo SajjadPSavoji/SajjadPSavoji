@@ -42,16 +42,16 @@ I take foundation models from research to real use: I post-train them on real da
 ## Featured open source
 
 <p align="center">
-  <a href="https://github.com/forall-labs/CALVIN-MAX"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-calvin-max-dark.svg"><img src="assets/card-calvin-max-light.svg" width="49%" alt="CALVIN-MAX: a 7,828-case benchmark of mid-execution changes for robot policies on CALVIN."></picture></a>
-  <a href="https://github.com/forall-labs/OpenCaP"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-opencap-dark.svg"><img src="assets/card-opencap-light.svg" width="49%" alt="OpenCaP: how open-weight LLMs fail at writing robot code, across 7,560 trials of 21 models."></picture></a>
+  <a href="https://github.com/forall-labs/CALVIN-MAX"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-calvin-max-dark.svg"><img src="assets/card-calvin-max-light.svg" width="49%" alt="CALVIN-MAX: 7,828 cases of mid-task changes across 10 robot policies. Pooled task success: 69.9% with no change, 60.5% when the change is already in place, 63.0% when it arrives mid-task."></picture></a>
+  <a href="https://github.com/forall-labs/OpenCaP"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-opencap-dark.svg"><img src="assets/card-opencap-light.svg" width="49%" alt="OpenCaP: 21 open-weight LLMs writing robot code in 7,560 trials. Removing high-level helpers raises frame errors from 4% to 47% and API misuse from 26% to 60% of failing programs."></picture></a>
 </p>
 <p align="center">
-  <a href="https://github.com/forall-labs/AutoPolish"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-autopolish-dark.svg"><img src="assets/card-autopolish-light.svg" width="49%" alt="AutoPolish: training-free image aesthetics editing with a synthetic audience of VLM critics."></picture></a>
-  <a href="https://github.com/SajjadPSavoji/awesome-weight-space-programming"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-awesome-wsp-dark.svg"><img src="assets/card-awesome-wsp-light.svg" width="49%" alt="Awesome Weight-Space Programming: a daily, agent-curated map of LLMs that read, edit and write network weights."></picture></a>
+  <a href="https://github.com/forall-labs/AutoPolish"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-autopolish-dark.svg"><img src="assets/card-autopolish-light.svg" width="49%" alt="AutoPolish: one editing round. An image goes to Qwen2-VL persona critics, FLUX Kontext edits it, and the edit is kept only if the score rises; then the next round starts."></picture></a>
+  <a href="https://github.com/SajjadPSavoji/awesome-weight-space-programming"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-awesome-wsp-dark.svg"><img src="assets/card-awesome-wsp-light.svg" width="49%" alt="Awesome Weight-Space Programming: the list grew from 31 to 606 entries between Nov 4 and Nov 15, curated by an agent."></picture></a>
 </p>
 <p align="center">
-  <a href="https://github.com/SajjadPSavoji/MiniVLMDocEval"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-minivlmdoceval-dark.svg"><img src="assets/card-minivlmdoceval-light.svg" width="49%" alt="MiniVLMDocEval: six sub-1B VLMs benchmarked on five document understanding benchmarks."></picture></a>
-  <a href="https://github.com/SajjadPSavoji/colabctl"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-colabctl-dark.svg"><img src="assets/card-colabctl-light.svg" width="49%" alt="colabctl: scriptable connect, status and disconnect for Google Colab GPU runtimes."></picture></a>
+  <a href="https://github.com/SajjadPSavoji/MiniVLMDocEval"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-minivlmdoceval-dark.svg"><img src="assets/card-minivlmdoceval-light.svg" width="49%" alt="MiniVLMDocEval: mean score over five document benchmarks. Qwen3.5-0.8B 70.3, InternVL3-1B 63.3, LFM2.5-VL-450M 59.9, LLaVA-OV-0.5B 52.8, SmolVLM2-500M 49.4, FastVLM-0.5B 36.8."></picture></a>
+  <a href="https://github.com/SajjadPSavoji/colabctl"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-colabctl-dark.svg"><img src="assets/card-colabctl-light.svg" width="49%" alt="colabctl: start, check and stop Google Colab GPU runtimes from the shell with colabctl up, colabctl status and colabctl down."></picture></a>
 </p>
 
 ## Selected publications
