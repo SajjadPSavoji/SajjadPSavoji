@@ -25,17 +25,19 @@
 
 ## About
 
-I take foundation models from research to real use: I post-train them on real data, measure exactly where they fail, and keep them improving after people start using them. Over the last six years that has meant LLMs in production, robot policies in simulation and on hardware, and 3D vision for warehouses and city streets.
+I'm an **AI Research Scientist** with 6+ years of experience training, post-training and evaluating foundation models, from LLM agents and VLMs to robot VLAs and world models. I lead teams that take models from data to deployment, and my focus now is **multimodal agents that learn continually from real-world feedback**.
 
-**What I do now: LLMs at Upwork.** I lead a five-person team that owns the model writing job posts inside Upwork's AI agent, used by more than a million people a day. We replaced a paid API model with an open Qwen model that we post-train ourselves on 100+ GPUs. It costs about 70% less, judges rate its posts 18% higher, and in A/B tests it raised post-to-hire conversion by 9%. The product keeps changing, so I built the loop that keeps the model current: it picks which new data is worth training on by matching gradients, guards against forgetting old skills, scores outputs with a panel of LLM judges we calibrated, and ships changes through A/B tests.
+**Currently, as Lead AI Research Scientist at Upwork,** I lead a five-person team that owns the job-post generation model behind Upwork's AI agent, serving over 1M daily users. We replaced a paid API model in production with a post-trained Qwen3 LLM that is cheaper and rated higher, and I drive continual learning for the agent through a data flywheel built on gradient matching, with LLM-as-a-judge evaluation and online A/B tests.
 
-**Before that: robots at Huawei Noah's Ark Lab.** I post-trained vision-language-action policies (π0.5, GR00T, OpenVLA) and video world models for long household tasks, generated synthetic training scenes with diffusion models, and built simulation benchmarks that show where robot policies break: clutter, distractors and new environments. Our team, The North Star, won the NeurIPS 2026 BEHAVIOR Challenge. I also built zero-shot 6D and 9DoF pose estimation, so warehouse robots can pick up boxes and objects they have never seen, even when they are partly hidden.
+**Before that, at Huawei Noah's Ark Lab,** I worked on embodied AI. I post-trained robot VLAs (π0.5, GR00T, OpenVLA) and DiT world models, built diffusion-based synthetic data engines for robot learning, and developed zero-shot 6D/9DoF pose estimation for warehouse robots. Our team, The North Star, won 1st place in the NeurIPS 2026 BEHAVIOR Challenge after placing 4th in 2025.
 
-**Earlier:** at the Vector Institute I built multi-agent LLM workflows, RAG and evaluation for banks (CIBC, TD), and at Trans-Plan I shipped a multi-camera 3D tracking system for traffic analytics.
+**At the Vector Institute,** I turned LLM and VLM research into agentic systems. I architected multi-step reasoning workflows and RAG pipelines that improved retrieval accuracy and safety, and led workshops on fine-tuning with LoRA and high-throughput serving with vLLM.
 
-**On the side:** I run open studies with [Forall Labs](https://forall-labs.github.io), such as how robot policies cope when a task changes halfway through and how open LLMs fail at writing robot code (below).
+**At Trans-Plan,** I built 3D perception systems for urban environments. I led distributed fine-tuning of ViT-based foundation models for open-vocabulary detection, segmentation and tracking, raising tracking accuracy (MOTA) by 28% and reaching 92% accuracy in trajectory classification. I also built a real-time 3D visualization GUI for human-in-the-loop model refinement.
 
-**Next:** multimodal agents that keep learning from real-world feedback.
+**My early work at AVIR** was a multimodal translation system for Iranian Sign Language: a MediaPipe and attention-based Bi-LSTM pipeline that translates video to text at over 30 FPS, fast enough for real-world use.
+
+**Awards:** VISTA Scholarship, Vector Scholarship in AI, Lassonde and Founder's Entrance Scholarships, IEEE ITSC Best Application Paper Award, and York University's Academic Excellence Award.
 
 <a href="https://github.com/SajjadPSavoji/Resume/blob/master/Sajjad_Pakdamansavoji_CV.pdf"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/link-cv-dark.svg"><img src="assets/link-cv-light.svg" height="34" alt="Read my CV (PDF)"></picture></a>
 
